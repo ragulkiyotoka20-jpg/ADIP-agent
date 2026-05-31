@@ -1,0 +1,21 @@
+name: slack_demo
+version: 0.1.0
+dsl_version: 3
+backend: file
+test_queries:
+  - SELECT * FROM slack_demo.messages LIMIT 1
+tables:
+  - name: messages
+    description: Deterministic Slack-shaped war-room messages for the judging replay.
+    format: jsonl
+    source:
+      location: file:///D:/coral_wemakedevs/incident-time-machine/data/slack/
+      glob: "**/*.jsonl"
+    columns:
+      - { name: message_id, type: Utf8 }
+      - { name: channel, type: Utf8 }
+      - { name: timestamp, type: Utf8 }
+      - { name: author, type: Utf8 }
+      - { name: text, type: Utf8 }
+      - { name: permalink, type: Utf8 }
+

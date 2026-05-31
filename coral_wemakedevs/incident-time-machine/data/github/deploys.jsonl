@@ -1,0 +1,2 @@
+{"deploy_id":"DEP-991","sha":"7f3c1a","repo":"org/checkout-service","message":"Route payment traffic through replica pool","author":"Mina","deployed_at":"2026-05-31T02:09:00Z","diff_url":"https://github.example/org/checkout-service/commit/7f3c1a"}
+

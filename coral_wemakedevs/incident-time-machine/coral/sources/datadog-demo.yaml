@@ -1,0 +1,23 @@
+name: datadog_demo
+version: 0.1.0
+dsl_version: 3
+backend: file
+test_queries:
+  - SELECT * FROM datadog_demo.metrics LIMIT 1
+tables:
+  - name: metrics
+    description: Deterministic Datadog-shaped service metrics for the judging replay.
+    format: jsonl
+    source:
+      location: file:///D:/coral_wemakedevs/incident-time-machine/data/datadog/
+      glob: "**/*.jsonl"
+    columns:
+      - { name: metric_id, type: Utf8 }
+      - { name: service, type: Utf8 }
+      - { name: window_start, type: Utf8 }
+      - { name: window_end, type: Utf8 }
+      - { name: p95_latency_ms, type: Float64 }
+      - { name: error_rate, type: Float64 }
+      - { name: baseline_p95_ms, type: Float64 }
+      - { name: dashboard_url, type: Utf8 }
+

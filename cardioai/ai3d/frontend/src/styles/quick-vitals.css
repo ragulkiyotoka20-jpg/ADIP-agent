@@ -1,0 +1,922 @@
+/* =========================================================
+   Quick Vitals — Scan-Free Village Health Screening
+   Stream Vision Agents × CardioSim AI
+   ========================================================= */
+
+.qv-root {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: linear-gradient(160deg, #0a0f1e 0%, #0d1520 60%, #0a0d1a 100%);
+    color: #e2e8f0;
+    font-family: 'Inter', sans-serif;
+}
+
+/* ── Header ── */
+.qv-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 26px 12px;
+    background: rgba(10, 15, 35, 0.9);
+    border-bottom: 1px solid rgba(168, 85, 247, 0.15);
+    backdrop-filter: blur(12px);
+    flex-wrap: wrap;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.qv-header-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.qv-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #7c3aed, #2563eb);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    box-shadow: 0 0 20px rgba(124, 58, 237, 0.4);
+    flex-shrink: 0;
+}
+
+.qv-header-left h2 {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 700;
+    background: linear-gradient(90deg, #a78bfa, #60a5fa);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.qv-header-left p {
+    margin: 2px 0 0;
+    font-size: 0.7rem;
+    color: #64748b;
+    letter-spacing: 0.04em;
+}
+
+.qv-badges {
+    display: flex;
+    gap: 7px;
+    flex-wrap: wrap;
+}
+
+.qv-badge {
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.qv-badge-stream {
+    background: rgba(59, 130, 246, 0.15);
+    color: #93c5fd;
+    border-color: rgba(59, 130, 246, 0.3);
+}
+
+.qv-badge-gemini {
+    background: rgba(139, 92, 246, 0.15);
+    color: #c4b5fd;
+    border-color: rgba(139, 92, 246, 0.3);
+}
+
+.qv-badge-live {
+    background: rgba(34, 197, 94, 0.15);
+    color: #86efac;
+    border-color: rgba(34, 197, 94, 0.3);
+    animation: qv-pulse 2s infinite;
+}
+
+.qv-badge-off {
+    background: rgba(100, 116, 139, 0.1);
+    color: #64748b;
+    border-color: rgba(100, 116, 139, 0.2);
+}
+
+@keyframes qv-pulse {
+
+    0%,
+    100% {
+        opacity: 1
+    }
+
+    50% {
+        opacity: 0.55
+    }
+}
+
+/* ── Body ── */
+.qv-body {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 0;
+    flex: 1;
+    overflow: hidden;
+    min-height: 0;
+}
+
+@media (max-width: 1000px) {
+    .qv-body {
+        grid-template-columns: 1fr;
+        overflow: auto;
+    }
+}
+
+/* ── Camera Column ── */
+.qv-camera-col {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 16px;
+    overflow-y: auto;
+    min-height: 0;
+}
+
+.qv-camera-box {
+    position: relative;
+    width: 100%;
+    max-width: 640px;
+    aspect-ratio: 4/3;
+    background: #080d1a;
+    border-radius: 16px;
+    border: 1px solid rgba(124, 58, 237, 0.15);
+    overflow: hidden;
+    box-shadow: 0 0 40px rgba(124, 58, 237, 0.08), 0 20px 60px rgba(0, 0, 0, 0.3);
+    align-self: flex-start;
+}
+
+.qv-cam-prompt {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 24px;
+    text-align: center;
+}
+
+.qv-cam-prompt h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #e2e8f0;
+    margin: 0;
+}
+
+.qv-cam-prompt>p {
+    font-size: 0.78rem;
+    color: #64748b;
+    margin: 0;
+    max-width: 340px;
+}
+
+.qv-feature-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.qv-feature-list li {
+    font-size: 0.78rem;
+    color: #94a3b8;
+    padding: 6px 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.qv-start-btn {
+    padding: 11px 28px;
+    background: linear-gradient(135deg, #7c3aed, #2563eb);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 20px rgba(124, 58, 237, 0.4);
+}
+
+.qv-start-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 28px rgba(124, 58, 237, 0.55);
+}
+
+.qv-video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.qv-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.qv-detect-badge {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    backdrop-filter: blur(8px);
+}
+
+.qv-detect-badge.on {
+    background: rgba(34, 197, 94, 0.2);
+    color: #86efac;
+    border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.qv-detect-badge.off {
+    background: rgba(251, 191, 36, 0.15);
+    color: #fde68a;
+    border: 1px solid rgba(251, 191, 36, 0.25);
+}
+
+.qv-stop-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 5px 12px;
+    background: rgba(239, 68, 68, 0.2);
+    color: #fca5a5;
+    border: 1px solid rgba(239, 68, 68, 0.35);
+    border-radius: 8px;
+    font-size: 0.72rem;
+    cursor: pointer;
+    backdrop-filter: blur(8px);
+}
+
+.qv-stop-btn:hover {
+    background: rgba(239, 68, 68, 0.35);
+}
+
+.qv-error {
+    color: #f87171;
+    font-size: 0.76rem;
+    padding: 6px 14px;
+    background: rgba(239, 68, 68, 0.1);
+    border-radius: 8px;
+    max-width: 300px;
+}
+
+.qv-note {
+    font-size: 0.65rem !important;
+    color: #334155 !important;
+    font-style: italic;
+}
+
+/* ── Breathing measure card ── */
+.qv-measure-card {
+    background: rgba(15, 20, 40, 0.7);
+    border: 1px solid rgba(99, 179, 237, 0.12);
+    border-radius: 12px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-width: 640px;
+}
+
+.qv-measure-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: #64748b;
+}
+
+.qv-progress-bar {
+    height: 6px;
+    background: rgba(255, 255, 255, 0.07);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.qv-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #7c3aed, #3b82f6);
+    border-radius: 3px;
+    transition: width 1s linear;
+}
+
+.qv-br-result {
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 0.78rem;
+    font-weight: 600;
+}
+
+.qv-br-result.ok {
+    background: rgba(34, 197, 94, 0.1);
+    color: #86efac;
+    border: 1px solid rgba(34, 197, 94, 0.25);
+}
+
+.qv-br-result.warning {
+    background: rgba(251, 191, 36, 0.1);
+    color: #fde68a;
+    border: 1px solid rgba(251, 191, 36, 0.25);
+}
+
+.qv-br-result.critical {
+    background: rgba(239, 68, 68, 0.1);
+    color: #fca5a5;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    animation: qv-pulse 1s infinite;
+}
+
+.qv-br-action {
+    color: #f87171;
+    font-weight: 700;
+}
+
+/* ── Scan controls ── */
+.qv-scan-ctrl {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-width: 640px;
+}
+
+.qv-notes {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    color: #cbd5e1;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.78rem;
+    padding: 10px 14px;
+    resize: none;
+    outline: none;
+}
+
+.qv-notes:focus {
+    border-color: rgba(124, 58, 237, 0.4);
+}
+
+.qv-scan-btn {
+    padding: 11px;
+    background: linear-gradient(135deg, #7c3aed, #2563eb);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 4px 16px rgba(124, 58, 237, 0.35);
+}
+
+.qv-scan-btn:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 24px rgba(124, 58, 237, 0.5);
+}
+
+.qv-scan-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.qv-scan-btn.loading {
+    background: rgba(124, 58, 237, 0.3);
+}
+
+.qv-scan-note {
+    font-size: 0.65rem;
+    color: #334155;
+    font-style: italic;
+    text-align: center;
+}
+
+.qv-spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid rgba(124, 58, 237, 0.2);
+    border-top-color: #a78bfa;
+    border-radius: 50%;
+    animation: qv-spin 0.8s linear infinite;
+}
+
+.qv-spinner-sm {
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: qv-spin 0.7s linear infinite;
+}
+
+@keyframes qv-spin {
+    to {
+        transform: rotate(360deg)
+    }
+}
+
+/* ── Results Column ── */
+.qv-results-col {
+    padding: 16px;
+    border-left: 1px solid rgba(124, 58, 237, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    overflow-y: auto;
+    background: rgba(10, 12, 28, 0.5);
+}
+
+/* Scan result card */
+.qv-result-card {
+    border-radius: 14px;
+    padding: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.qv-result-card.urgency-ok {
+    background: rgba(34, 197, 94, 0.06);
+    border-color: rgba(34, 197, 94, 0.2);
+}
+
+.qv-result-card.urgency-warning {
+    background: rgba(251, 191, 36, 0.06);
+    border-color: rgba(251, 191, 36, 0.2);
+}
+
+.qv-result-card.urgency-critical {
+    background: rgba(239, 68, 68, 0.08);
+    border-color: rgba(239, 68, 68, 0.25);
+}
+
+.qv-result-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.qv-urgency-icon {
+    font-size: 1.6rem;
+    flex-shrink: 0;
+}
+
+.qv-result-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #e2e8f0;
+    margin: 0;
+}
+
+.qv-result-provider {
+    font-size: 0.65rem;
+    color: #64748b;
+    margin: 2px 0 0;
+}
+
+.qv-refer-badge {
+    margin-left: auto;
+    padding: 4px 10px;
+    border-radius: 20px;
+    background: rgba(239, 68, 68, 0.15);
+    color: #fca5a5;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    font-size: 0.68rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.qv-result-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.qv-result-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.qv-item-label {
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #475569;
+    text-transform: uppercase;
+}
+
+.qv-item-val {
+    font-size: 0.78rem;
+    color: #cbd5e1;
+}
+
+.qv-section-label {
+    font-size: 0.62rem;
+    font-weight: 700;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 6px;
+}
+
+.qv-conditions,
+.qv-recs {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.qv-condition-item {
+    font-size: 0.78rem;
+    color: #94a3b8;
+    padding: 5px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.qv-rec-item {
+    font-size: 0.78rem;
+    color: #86efac;
+    padding: 5px 0;
+}
+
+/* Placeholder */
+.qv-placeholder-card {
+    border-radius: 14px;
+    padding: 22px;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px dashed rgba(255, 255, 255, 0.07);
+}
+
+.qv-placeholder-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #334155;
+    margin-bottom: 6px;
+}
+
+.qv-placeholder-sub {
+    font-size: 0.75rem;
+    color: #1e293b;
+}
+
+/* Live vital */
+.qv-live-vital {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px;
+    border-radius: 12px;
+    border: 1px solid transparent;
+}
+
+.qv-live-vital.ok {
+    background: rgba(34, 197, 94, 0.08);
+    border-color: rgba(34, 197, 94, 0.2);
+}
+
+.qv-live-vital.warning {
+    background: rgba(251, 191, 36, 0.08);
+    border-color: rgba(251, 191, 36, 0.2);
+}
+
+.qv-live-vital.critical {
+    background: rgba(239, 68, 68, 0.08);
+    border-color: rgba(239, 68, 68, 0.25);
+    animation: qv-pulse 1.5s infinite;
+}
+
+.qv-live-vital.na {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: rgba(255, 255, 255, 0.07);
+}
+
+.qv-vital-icon {
+    font-size: 1.8rem;
+    flex-shrink: 0;
+}
+
+.qv-vital-val {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #e2e8f0;
+}
+
+.qv-vital-val span {
+    font-size: 0.8rem;
+    font-weight: 400;
+    color: #64748b;
+    margin-left: 4px;
+}
+
+.qv-vital-label {
+    font-size: 0.75rem;
+    color: #94a3b8;
+}
+
+.qv-vital-normal {
+    font-size: 0.65rem;
+    color: #334155;
+    margin-top: 2px;
+}
+
+/* Info Sections */
+.qv-info-section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.qv-info-title {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: #374151;
+    text-transform: uppercase;
+}
+
+.qv-vital-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.qv-vsign-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 9px 12px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    font-size: 0.75rem;
+}
+
+.qv-vsign-card>span {
+    font-size: 1.2rem;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+.qv-vsign-card strong {
+    color: #94a3b8;
+    font-size: 0.78rem;
+    display: block;
+}
+
+.qv-vsign-card p {
+    color: #4b5563;
+    font-size: 0.7rem;
+    margin: 2px 0 0;
+    line-height: 1.4;
+}
+
+.qv-cond-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.qv-cond-icon {
+    font-size: 1.1rem;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.qv-cond-title {
+    font-size: 0.76rem;
+    font-weight: 600;
+    color: #94a3b8;
+    margin: 0;
+}
+
+.qv-cond-range {
+    font-size: 0.65rem;
+    color: #4b5563;
+    margin: 1px 0;
+}
+
+.qv-cond-insight {
+    font-size: 0.68rem;
+    color: #374151;
+    margin: 0;
+    line-height: 1.4;
+}
+
+.qv-disclaimer {
+    font-size: 0.65rem;
+    color: #1e293b;
+    padding: 10px 12px;
+    border-radius: 8px;
+    background: rgba(251, 191, 36, 0.04);
+    border: 1px solid rgba(251, 191, 36, 0.1);
+    text-align: center;
+    line-height: 1.5;
+}
+
+.qv-disclaimer strong {
+    color: #92400e;
+}
+
+.qv-disclaimer em {
+    font-style: italic;
+    color: #78350f;
+}
+
+/* ── Placeholder card extras ── */
+.qv-placeholder-icon {
+    font-size: 2rem;
+    margin-bottom: 6px;
+}
+
+.qv-placeholder-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
+    margin-top: 12px;
+}
+
+.qv-placeholder-tags span {
+    padding: 3px 10px;
+    border-radius: 14px;
+    background: rgba(124, 58, 237, 0.1);
+    border: 1px solid rgba(124, 58, 237, 0.18);
+    color: #a78bfa;
+    font-size: 0.68rem;
+    font-weight: 600;
+}
+
+/* ── Section description ── */
+.qv-section-desc {
+    font-size: 0.74rem;
+    color: #4b5563;
+    line-height: 1.55;
+    margin-bottom: 10px;
+    padding: 8px 10px;
+    background: rgba(255, 255, 255, 0.02);
+    border-left: 2px solid rgba(124, 58, 237, 0.3);
+    border-radius: 0 6px 6px 0;
+}
+
+/* ── How to Use steps ── */
+.qv-step-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    margin-bottom: 6px;
+}
+
+.qv-step-num {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #7c3aed, #2563eb);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: white;
+    margin-top: 1px;
+}
+
+.qv-step-title {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #94a3b8;
+    margin: 0 0 3px;
+}
+
+.qv-step-desc {
+    font-size: 0.72rem;
+    color: #4b5563;
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* ── Vital sign action hint ── */
+.qv-vsign-action {
+    font-size: 0.68rem;
+    color: #60a5fa;
+    margin-top: 4px !important;
+    font-style: italic;
+    padding: 3px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* ── Condition detail ── */
+.qv-cond-detail {
+    font-size: 0.67rem;
+    color: #374151;
+    margin: 4px 0 0;
+    padding: 4px 8px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.025);
+    border-left: 2px solid rgba(59, 130, 246, 0.3);
+    line-height: 1.45;
+}
+
+/* ── Why This Matters card ── */
+.qv-why-card {
+    border-radius: 12px;
+    padding: 16px;
+    background: linear-gradient(135deg, rgba(124, 58, 237, 0.07), rgba(37, 99, 235, 0.05));
+    border: 1px solid rgba(124, 58, 237, 0.15);
+}
+
+.qv-why-title {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    color: #a78bfa;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+}
+
+.qv-why-text {
+    font-size: 0.74rem;
+    color: #4b5563;
+    line-height: 1.6;
+    margin-bottom: 8px;
+}
+
+.qv-why-text:last-child {
+    margin-bottom: 0;
+}
+
+.qv-why-text strong {
+    color: #7c3aed;
+}
+
+/* ── Tab wrapper ── */
+.vitals-tab-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    min-height: 0;
+}
+
+.vitals-tab-content .qv-root {
+    flex: 1;
+    min-height: 0;
+    height: 100%;
+}
+
+.vitals-tab-content .qv-body {
+    flex: 1;
+    min-height: 0;
+}
+
+/* Nav tab style */
+.nav-tab-vitals {
+    background: linear-gradient(135deg, rgba(124, 58, 237, 0.12), rgba(37, 99, 235, 0.12));
+    border-color: rgba(167, 139, 250, 0.3);
+}
+
+.nav-tab-vitals.active {
+    background: linear-gradient(135deg, rgba(124, 58, 237, 0.25), rgba(37, 99, 235, 0.25));
+    border-color: rgba(167, 139, 250, 0.6);
+    color: #c4b5fd;
+}

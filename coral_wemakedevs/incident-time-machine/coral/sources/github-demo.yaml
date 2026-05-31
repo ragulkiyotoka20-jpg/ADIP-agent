@@ -1,0 +1,22 @@
+name: github_demo
+version: 0.1.0
+dsl_version: 3
+backend: file
+test_queries:
+  - SELECT * FROM github_demo.deploys LIMIT 1
+tables:
+  - name: deploys
+    description: Deterministic GitHub-shaped deploy records for the judging replay.
+    format: jsonl
+    source:
+      location: file:///D:/coral_wemakedevs/incident-time-machine/data/github/
+      glob: "**/*.jsonl"
+    columns:
+      - { name: deploy_id, type: Utf8 }
+      - { name: sha, type: Utf8 }
+      - { name: repo, type: Utf8 }
+      - { name: message, type: Utf8 }
+      - { name: author, type: Utf8 }
+      - { name: deployed_at, type: Utf8 }
+      - { name: diff_url, type: Utf8 }
+
