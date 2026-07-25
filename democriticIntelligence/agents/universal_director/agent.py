@@ -6,6 +6,7 @@ from .animation_generator import AnimationGenerator
 from .script_writer import ScriptWriter
 from .composer import UniversalComposer
 from .thumbnail_generator import ThumbnailGenerator
+from .image_asset_generator import ImageAssetGenerator
 
 # Fix Windows console encoding
 if sys.platform == 'win32':
@@ -20,11 +21,12 @@ class UniversalDirectorAgent:
     EVERYTHING is driven by Web Gemini:
     
     0. Asks Gemini to RESEARCH real-world product specs, workflows, colors & terminology
-    1. Asks Gemini to WRITE the bespoke HTML/CSS/JS animation code matching the research
-    2. Asks Gemini to WRITE matching voiceover narration
-    3. Generates audio + subtitles via Edge-TTS
-    4. Records animation + composes 1080p MP4
-    5. Asks Gemini to GENERATE a 16:9 product hero thumbnail
+    1. Asks Gemini to WRITE matching voiceover narration
+    2. Generates audio + subtitles via Edge-TTS
+    3. Asks Gemini to WRITE bespoke HTML/CSS/JS animation code matching the research
+    4. Asks Gemini to GENERATE high-resolution AI Product Images for all animation assets
+    5. Records animation + composes 1080p MP4
+    6. Asks Gemini to GENERATE a 16:9 product hero thumbnail
     """
     
     def __init__(self):
@@ -33,6 +35,7 @@ class UniversalDirectorAgent:
         self.script_writer = ScriptWriter()
         self.composer = UniversalComposer()
         self.thumbnail_gen = ThumbnailGenerator()
+        self.image_asset_gen = ImageAssetGenerator()
 
     def _get_audio_duration(self, audio_file: str) -> float:
         """Get exact duration of MP3 audio file using ffprobe or fallback estimation."""
@@ -122,6 +125,20 @@ class UniversalDirectorAgent:
         print(f"\n  [OK] App Name: {app_name}")
         print(f"  [OK] Tagline: {app_tagline}")
         print(f"  [OK] Animation: {html_path}")
+
+        # -- Step 2.5: Generate High-Resolution AI Product Images for Animation Assets --
+        print(f"\n{'-'*50}")
+        print(f"[Step 2.5/5] GEMINI -> Generate AI Product Visual Assets for Animation")
+        print(f"{'-'*50}")
+        
+        try:
+            self.image_asset_gen.generate_assets_for_html(
+                html_path=html_path,
+                topic=topic,
+                research_brief=research_brief
+            )
+        except Exception as img_err:
+            print(f"  [WARN] Image asset generation warning: {img_err}")
 
         # -- Step 3: Record animation + compose final video matching exact audio duration --
         print(f"\n{'-'*50}")

@@ -92,10 +92,13 @@ class UniversalComposer:
             except Exception:
                 pass
         
-        # Merge Video + Audio + Burn Subtitles
+        # Merge Video + Audio + Burn Subtitles with Broadcast Styling
         print(f"[UniversalComposer] Merging audio {audio_track} and burning subtitles {captions_file}...")
         if os.path.exists(final_output):
             os.remove(final_output)
+            
+        # Format force_style for high-legibility subtitle box
+        sub_filter = f"subtitles='{captions_file}':force_style='FontName=Segoe UI,FontSize=20,PrimaryColour=&H00FFFFFF,OutlineColour=&H00000000,BackColour=&H99000000,BorderStyle=4,MarginV=45,Alignment=2'"
             
         ffmpeg_cmd = [
             "ffmpeg", 
@@ -107,7 +110,7 @@ class UniversalComposer:
             "-crf", "18",
             "-c:a", "aac", 
             "-b:a", "192k",
-            "-vf", f"subtitles={captions_file}",
+            "-vf", sub_filter,
             "-shortest",
             final_output
         ]
