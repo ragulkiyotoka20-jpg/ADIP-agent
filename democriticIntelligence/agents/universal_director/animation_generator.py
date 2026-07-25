@@ -110,11 +110,13 @@ Return ONLY the complete raw HTML code starting with <!DOCTYPE html>. Do NOT out
         
         return self._extract_html(response)
     
-    def _retry_html(self, topic: str) -> str:
+    def _retry_html(self, topic: str, research_brief: str = None) -> str:
         """Retry with an explicit high-impact prompt."""
         
+        brief_context = f"\nRESEARCH BRIEF & SPECIFICATION FOR '{topic}':\n{research_brief}\n" if research_brief else ""
+        
         prompt = f"""Write a comprehensive 1000+ line single self-contained HTML file (with embedded CSS and JS) for a 45-second product launch video for "{topic}".
-
+{brief_context}
 STRICT SPECIFICATIONS:
 - 1920x1080 resolution (16:9 widescreen)
 - DO NOT wrap in a generic computer mockup or show any "Loading..." spinners!
@@ -209,19 +211,28 @@ Format each answer on its own line, numbered 1-10. No extra text."""
     def _extract_html(self, response: str) -> str:
         """Extract clean HTML from Gemini's response."""
         
-        # Try to find HTML in code fences
-        html_match = re.search(r'```(?:html)?\s*(<!DOCTYPE[\s\S]*?</html>)\s*```', response, re.IGNORECASE)
+        # Try to find HTML in code fences (with or without DOCTYPE)
+        html_match = re.search(r'```(?:html)?\s*(<(?:!DOCTYPE|html)[\s\S]*?</html>)\s*```', response, re.IGNORECASE)
         if html_match:
             return html_match.group(1).strip()
+        
+        # Generic code fence matching
+        code_fence_match = re.search(r'```(?:html)?\s*(<[\s\S]*?>[\s\S]*?)\s*```', response, re.IGNORECASE)
+        if code_fence_match:
+            content = code_fence_match.group(1).strip()
+            if '</html>' in content.lower() or '<style' in content.lower() or '<div' in content.lower():
+                if not content.lower().startswith('<!doctype'):
+                    content = '<!DOCTYPE html>\n' + content
+                return content
         
         # Try to find raw HTML (no code fences)
-        html_match = re.search(r'(<!DOCTYPE[\s\S]*?</html>)', response, re.IGNORECASE)
+        html_match = re.search(r'((?:<!DOCTYPE|html)[\s\S]*?</html>)', response, re.IGNORECASE)
         if html_match:
             return html_match.group(1).strip()
         
-        # If response starts with < it might be the HTML directly
+        # Fallback for raw HTML response
         stripped = response.strip()
-        if stripped.lower().startswith('<!doctype') or stripped.startswith('<html'):
+        if stripped.lower().startswith('<!doctype') or stripped.lower().startswith('<html'):
             return stripped
         
         return ""
