@@ -3,269 +3,186 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Space Exploration Production Showcase</title>
+    <title>Aetheris - Deep Space Exploration Launch</title>
     <style>
         :root {
             --bg-deep: #030712;
-            --space-blue: #0b1329;
-            --accent-cyan: #00f0ff;
-            --accent-purple: #7928ca;
-            --accent-orange: #ff4d00;
-            --glass-bg: rgba(13, 20, 38, 0.65);
-            --glass-border: rgba(255, 255, 255, 0.12);
-            --glass-shine: rgba(255, 255, 255, 0.05);
-            --text-main: #f3f4f6;
-            --text-muted: #9ca3af;
+            --bg-surface: rgba(15, 23, 42, 0.65);
+            --border-glass: rgba(255, 255, 255, 0.08);
+            --accent-cyan: #06b6d4;
+            --accent-blue: #3b82f6;
+            --accent-violet: #8b5cf6;
+            --accent-emerald: #10b981;
+            --accent-rose: #f43f5e;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            user-select: none;
         }
 
-        body {
-            background-color: #010409;
-            color: var(--text-main);
+        body, html {
             width: 100vw;
             height: 100vh;
+            background-color: var(--bg-deep);
+            color: var(--text-main);
             overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
         }
 
-        /* 1920x1080 Keynote Canvas Scale Container */
-        .canvas-container {
+        /* 1920x1080 Container scaled to viewport */
+        .viewport-container {
+            position: relative;
             width: 1920px;
             height: 1080px;
-            position: relative;
-            background: radial-gradient(circle at 50% 50%, #0d1b3e 0%, #030712 100%);
+            transform-origin: center;
             overflow: hidden;
-            transform-origin: center center;
-            box-shadow: 0 0 50px rgba(0, 0, 0, 0.9);
+            background: radial-gradient(circle at 50% 30%, #0f172a 0%, #030712 70%);
+            box-shadow: 0 0 50px rgba(0,0,0,0.9);
         }
 
-        /* Starfield Background */
-        .starfield {
+        /* Ambient Space Background Canvas */
+        #bg-canvas {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            pointer-events: none;
             z-index: 1;
-        }
-
-        .star {
-            position: absolute;
-            background: #ffffff;
-            border-radius: 50%;
-            animation: twinkle var(--duration) infinite ease-in-out;
-        }
-
-        @keyframes twinkle {
-            0%, 100% { opacity: 0.2; transform: scale(0.8); }
-            50% { opacity: 1; transform: scale(1.2); }
-        }
-
-        /* Nebula Ambient Lighting */
-        .nebula-glow {
-            position: absolute;
-            width: 800px;
-            height: 800px;
-            border-radius: 50%;
-            filter: blur(120px);
-            z-index: 2;
-            opacity: 0.3;
             pointer-events: none;
-            transition: all 2s ease-in-out;
         }
 
-        .nebula-1 { top: -200px; left: -200px; background: rgba(121, 40, 202, 0.4); }
-        .nebula-2 { bottom: -200px; right: -200px; background: rgba(0, 240, 255, 0.3); }
-
-        /* 3D Isometric Perspective Glass UI Container */
-        .isometric-wrapper {
+        /* Full-bleed 3D HUD Canvas */
+        #hud-canvas {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            perspective: 1400px;
-            z-index: 10;
+            z-index: 2;
+            pointer-events: none;
         }
 
-        .glass-stage {
-            width: 1680px;
-            height: 920px;
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            border-radius: 32px;
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            transform: perspective(1400px) rotateY(-12deg) rotateX(6deg);
-            transform-style: preserve-3d;
-            box-shadow: 
-                -40px 40px 100px rgba(0, 0, 0, 0.6),
-                inset 0 0 0 1px rgba(255, 255, 255, 0.08),
-                inset 0 0 40px var(--glass-shine);
+        /* UI Layer */
+        .ui-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 5;
             display: flex;
             flex-direction: column;
-            position: relative;
-            overflow: hidden;
-            transition: transform 1s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        /* Floating 3D Frosted Glass Spheres */
-        .glass-sphere {
-            position: absolute;
-            border-radius: 50%;
-            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.2), rgba(255,255,255,0.02) 70%);
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            backdrop-filter: blur(8px);
+            justify-content: space-between;
+            padding: 40px 60px;
             pointer-events: none;
-            z-index: 5;
-            box-shadow: inset 0 0 20px rgba(255,255,255,0.1), 0 20px 40px rgba(0,0,0,0.4);
         }
 
-        .sphere-1 { width: 180px; height: 180px; top: 100px; right: 150px; transform: translateZ(80px); animation: floatSphere1 8s infinite ease-in-out; }
-        .sphere-2 { width: 120px; height: 120px; bottom: 120px; left: 100px; transform: translateZ(120px); animation: floatSphere2 10s infinite ease-in-out; }
-        .sphere-3 { width: 80px; height: 80px; top: 300px; left: 200px; transform: translateZ(40px); animation: floatSphere3 6s infinite ease-in-out; }
-
-        @keyframes floatSphere1 {
-            0%, 100% { transform: translateZ(80px) translateY(0) rotate(0deg); }
-            50% { transform: translateZ(100px) translateY(-25px) rotate(10deg); }
-        }
-        @keyframes floatSphere2 {
-            0%, 100% { transform: translateZ(120px) translateY(0) rotate(0deg); }
-            50% { transform: translateZ(150px) translateY(30px) rotate(-15deg); }
-        }
-        @keyframes floatSphere3 {
-            0%, 100% { transform: translateZ(40px) translateY(0); }
-            50% { transform: translateZ(70px) translateY(-15px); }
+        /* Glass Card Component */
+        .glass-card {
+            background: var(--bg-surface);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-glass);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        /* Ambient Glowing Light Arcs */
-        .light-arc {
-            position: absolute;
-            border-radius: 50%;
-            border: 2px solid transparent;
-            pointer-events: none;
-            z-index: 3;
-        }
-
-        .arc-1 {
-            width: 1000px;
-            height: 1000px;
-            top: -300px;
-            right: -200px;
-            border-top-color: var(--accent-cyan);
-            border-right-color: var(--accent-purple);
-            transform: rotate(-45deg) translateZ(20px);
-            opacity: 0.4;
-            filter: drop-shadow(0 0 15px var(--accent-cyan));
-            animation: rotateArc 30s linear infinite;
-        }
-
-        .arc-2 {
-            width: 700px;
-            height: 700px;
-            bottom: -200px;
-            left: -100px;
-            border-bottom-color: var(--accent-orange);
-            border-left-color: var(--accent-cyan);
-            transform: rotate(30deg) translateZ(30px);
-            opacity: 0.3;
-            filter: drop-shadow(0 0 15px var(--accent-orange));
-            animation: rotateArcReverse 25s linear infinite;
-        }
-
-        @keyframes rotateArc {
-            0% { transform: rotate(-45deg) translateZ(20px); }
-            100% { transform: rotate(315deg) translateZ(20px); }
-        }
-        @keyframes rotateArcReverse {
-            0% { transform: rotate(30deg) translateZ(30px); }
-            100% { transform: rotate(-330deg) translateZ(30px); }
-        }
-
-        /* Stage Header & Navigation Progress Bar */
-        .stage-header {
+        /* Top Bar */
+        .top-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 40px 60px;
-            z-index: 20;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            width: 100%;
+            pointer-events: auto;
         }
 
-        .brand-group {
+        .brand-box {
             display: flex;
             align-items: center;
             gap: 16px;
         }
 
         .brand-logo {
-            width: 44px;
-            height: 44px;
-            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
             border-radius: 12px;
             display: flex;
             justify-content: center;
             align-items: center;
-            box-shadow: 0 0 20px rgba(0, 240, 255, 0.4);
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.4);
         }
 
         .brand-logo svg {
-            width: 24px;
-            height: 24px;
+            width: 28px;
+            height: 28px;
             fill: #fff;
         }
 
         .brand-title {
-            font-size: 22px;
-            font-weight: 700;
+            font-size: 24px;
+            font-weight: 800;
             letter-spacing: 2px;
-            text-transform: uppercase;
             background: linear-gradient(90deg, #fff, var(--text-muted));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
-        .timeline-indicators {
+        .mission-status {
             display: flex;
-            gap: 12px;
+            gap: 24px;
+            align-items: center;
         }
 
-        .timeline-dot {
-            width: 12px;
-            height: 12px;
+        .badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(6, 182, 212, 0.1);
+            border: 1px solid rgba(6, 182, 212, 0.3);
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--accent-cyan);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent-cyan);
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.15);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            transition: all 0.5s ease;
-            position: relative;
-            cursor: pointer;
+            box-shadow: 0 0 10px var(--accent-cyan);
+            animation: pulse 2s infinite;
         }
 
-        .timeline-dot.active {
-            background: var(--accent-cyan);
-            border-color: #fff;
-            box-shadow: 0 0 15px var(--accent-cyan);
-            transform: scale(1.2);
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(6, 182, 212, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(6, 182, 212, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(6, 182, 212, 0); }
         }
 
-        /* Main Scene Viewport */
-        .scene-viewport {
-            flex: 1;
-            position: relative;
-            overflow: hidden;
-            z-index: 20;
+        /* Scenes Container */
+        .scene-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 3;
+            pointer-events: none;
         }
 
         .scene {
@@ -274,927 +191,598 @@
             left: 0;
             width: 100%;
             height: 100%;
-            padding: 40px 60px;
+            padding: 120px 60px 60px 60px;
             display: grid;
-            grid-template-columns: 1.1fr 0.9fr;
-            gap: 60px;
-            align-items: center;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 24px;
             opacity: 0;
             visibility: hidden;
-            transform: translateY(30px) translateZ(0);
-            transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.8s;
+            transition: opacity 1s ease-in-out, visibility 1s ease-in-out;
+            pointer-events: none;
         }
 
         .scene.active {
             opacity: 1;
             visibility: visible;
-            transform: translateY(0) translateZ(50px);
+            pointer-events: auto;
         }
 
-        /* Typography & Layout Modules */
-        .scene-content {
+        /* Typography & Content Layouts */
+        .hero-text {
+            grid-column: span 7;
             display: flex;
             flex-direction: column;
+            justify-content: center;
             gap: 24px;
-            transform-style: preserve-3d;
         }
 
-        .badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 16px;
-            background: rgba(0, 240, 255, 0.1);
-            border: 1px solid rgba(0, 240, 255, 0.3);
-            border-radius: 30px;
-            font-size: 13px;
-            font-weight: 600;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            color: var(--accent-cyan);
-            width: fit-content;
-            box-shadow: 0 0 15px rgba(0, 240, 255, 0.15);
-        }
-
-        h1 {
-            font-size: 64px;
-            font-weight: 800;
+        .hero-text h1 {
+            font-size: 72px;
             line-height: 1.1;
+            font-weight: 900;
             letter-spacing: -1px;
-            color: #fff;
-        }
-
-        h1 span {
-            background: linear-gradient(90deg, var(--accent-cyan), #ffffff, var(--accent-purple));
+            background: linear-gradient(180deg, #fff 0%, var(--text-muted) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
-        p.description {
+        .hero-text p {
             font-size: 20px;
             line-height: 1.6;
             color: var(--text-muted);
-            max-width: 650px;
+            max-width: 600px;
         }
 
-        .action-group {
-            display: flex;
-            gap: 20px;
-            margin-top: 12px;
-        }
-
-        .btn-primary {
-            padding: 16px 36px;
-            background: linear-gradient(135deg, var(--accent-cyan), #0077ff);
-            color: #030712;
-            font-weight: 700;
-            font-size: 16px;
-            border-radius: 14px;
-            border: none;
-            cursor: pointer;
-            box-shadow: 0 10px 30px rgba(0, 240, 255, 0.4);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-3px) scale(1.02);
-            box-shadow: 0 15px 40px rgba(0, 240, 255, 0.6);
-        }
-
-        .btn-secondary {
-            padding: 16px 36px;
-            background: rgba(255, 255, 255, 0.05);
-            color: #fff;
-            font-weight: 600;
-            font-size: 16px;
-            border-radius: 14px;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            cursor: pointer;
-            backdrop-filter: blur(10px);
-            transition: background 0.3s ease, border-color 0.3s ease;
-        }
-
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: rgba(255, 255, 255, 0.3);
-        }
-
-        /* Z-Space Pop-out Feature Cards & Visual Displays */
-        .visual-display-container {
-            position: relative;
-            width: 100%;
-            height: 520px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transform-style: preserve-3d;
-        }
-
-        .main-card {
-            width: 100%;
-            height: 100%;
-            background: rgba(10, 15, 30, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 24px;
-            overflow: hidden;
-            position: relative;
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
-            display: flex;
-            flex-direction: column;
-            transform: translateZ(20px);
-        }
-
-        .card-header-bar {
-            padding: 20px 24px;
-            background: rgba(255, 255, 255, 0.02);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .card-dots {
-            display: flex;
-            gap: 8px;
-        }
-
-        .card-dots span {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.2);
-        }
-        .card-dots span:nth-child(1) { background: #ff5f56; }
-        .card-dots span:nth-child(2) { background: #ffbd2e; }
-        .card-dots span:nth-child(3) { background: #27c93f; }
-
-        .card-title-text {
-            font-size: 14px;
-            font-weight: 500;
-            color: var(--text-muted);
-            letter-spacing: 1px;
-        }
-
-        /* Pop-out Feature Card in Z-Space */
-        .popout-card {
-            position: absolute;
-            background: rgba(15, 23, 42, 0.85);
-            border: 1px solid rgba(0, 240, 255, 0.3);
-            backdrop-filter: blur(16px);
-            border-radius: 18px;
-            padding: 20px 24px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 20px rgba(0, 240, 255, 0.15);
-            transform: translateZ(90px);
-            z-index: 30;
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            animation: floatPopout 6s infinite ease-in-out;
-        }
-
-        @keyframes floatPopout {
-            0%, 100% { transform: translateZ(90px) translateY(0); }
-            50% { transform: translateZ(110px) translateY(-10px); }
-        }
-
-        .popout-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
-            background: rgba(0, 240, 255, 0.15);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: var(--accent-cyan);
-            font-size: 22px;
-        }
-
-        .popout-info h4 {
-            font-size: 16px;
-            font-weight: 700;
-            color: #fff;
-            margin-bottom: 4px;
-        }
-
-        .popout-info p {
-            font-size: 13px;
-            color: var(--text-muted);
-        }
-
-        /* Custom Scene Elements: Scene 1 - Propulsion Engine Telemetry */
+        /* Widgets and Telemetry Cards */
         .telemetry-grid {
-            flex: 1;
-            padding: 30px;
+            grid-column: span 5;
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            align-content: center;
         }
 
-        .telemetry-box {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 16px;
-            padding: 20px;
+        .metric-card {
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            gap: 8px;
         }
 
         .metric-label {
             font-size: 13px;
-            color: var(--text-muted);
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+            font-weight: 600;
         }
 
         .metric-value {
             font-size: 32px;
-            font-weight: 800;
-            color: var(--accent-cyan);
-            margin: 10px 0;
+            font-weight: 700;
+            color: #fff;
             font-variant-numeric: tabular-nums;
         }
 
-        .waveform-canvas {
+        .metric-unit {
+            font-size: 14px;
+            color: var(--accent-cyan);
+            font-weight: 500;
+            margin-left: 4px;
+        }
+
+        /* Progress & Timeline Bar at Bottom */
+        .bottom-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             width: 100%;
-            height: 40px;
+            pointer-events: auto;
         }
 
-        /* Custom Scene Elements: Scene 2 - Orbital Trajectory Map */
-        .orbit-container {
-            flex: 1;
-            position: relative;
-            background: radial-gradient(circle at center, #070d1d 0%, #030712 100%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-        }
-
-        .planet-core {
-            width: 100px;
-            height: 100px;
-            background: radial-gradient(circle at 30% 30%, #3b82f6, #1d4ed8 70%, #0f172a);
-            border-radius: 50%;
-            box-shadow: 0 0 50px rgba(59, 130, 246, 0.6), inset -10px -10px 20px rgba(0,0,0,0.8);
-            position: relative;
-            z-index: 2;
-        }
-
-        .orbit-ring {
-            position: absolute;
-            border: 1px dashed rgba(255, 255, 255, 0.2);
-            border-radius: 50%;
-            animation: spinRing 20s linear infinite;
-        }
-
-        .orbit-1 { width: 220px; height: 220px; animation-duration: 15s; }
-        .orbit-2 { width: 360px; height: 360px; animation-duration: 25s; animation-direction: reverse; border-color: rgba(0, 240, 255, 0.25); }
-
-        @keyframes spinRing {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .satellite-node {
-            position: absolute;
-            top: -6px;
-            left: 50%;
-            width: 12px;
-            height: 12px;
-            background: var(--accent-cyan);
-            border-radius: 50%;
-            box-shadow: 0 0 15px var(--accent-cyan);
-        }
-
-        /* Custom Scene Elements: Scene 3 - Deep Space Diagnostics */
-        .diagnostic-grid {
-            flex: 1;
-            padding: 30px;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            justify-content: center;
-        }
-
-        .diagnostic-row {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 14px;
-            padding: 16px 24px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .diagnostic-name {
-            font-weight: 600;
-            font-size: 15px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .status-badge {
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 700;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-
-        .status-badge.nominal {
-            background: rgba(39, 201, 63, 0.15);
-            color: #27c93f;
-            border: 1px solid rgba(39, 201, 63, 0.3);
-            box-shadow: 0 0 10px rgba(39, 201, 63, 0.2);
-        }
-
-        /* Custom Scene Elements: Scene 4 - Interstellar Launch Protocol */
-        .launch-control-box {
-            flex: 1;
-            padding: 40px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            gap: 24px;
-            background: radial-gradient(circle at center, rgba(255, 77, 0, 0.15) 0%, transparent 70%);
-        }
-
-        .countdown-timer {
-            font-size: 72px;
-            font-weight: 900;
-            font-family: monospace;
-            background: linear-gradient(180deg, #fff, var(--accent-orange));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: 4px;
-            text-shadow: 0 0 30px rgba(255, 77, 0, 0.5);
-        }
-
-        /* Control Footer & Player Bar */
-        .stage-footer {
-            padding: 24px 60px;
-            background: rgba(0, 0, 0, 0.3);
-            border-top: 1px solid rgba(255, 255, 255, 0.06);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 20;
-        }
-
-        .player-controls {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .control-btn {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            color: #fff;
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .control-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-            border-color: #fff;
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
-        }
-
-        .progress-bar-track {
-            width: 400px;
-            height: 6px;
+        .timeline-container {
+            flex-grow: 1;
+            margin: 0 40px;
+            height: 4px;
             background: rgba(255, 255, 255, 0.1);
-            border-radius: 3px;
-            overflow: hidden;
+            border-radius: 2px;
             position: relative;
-            cursor: pointer;
+            overflow: hidden;
         }
 
-        .progress-bar-fill {
+        .timeline-progress {
             position: absolute;
             top: 0;
             left: 0;
             height: 100%;
             width: 0%;
-            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
-            box-shadow: 0 0 10px var(--accent-cyan);
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-violet));
             transition: width 0.1s linear;
         }
 
-        .time-display {
-            font-size: 14px;
-            font-family: monospace;
-            color: var(--text-muted);
-            letter-spacing: 1px;
-        }
-
-        .showcase-status {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 14px;
+        .time-counter {
+            font-size: 16px;
             font-weight: 600;
-            letter-spacing: 1px;
-            color: var(--accent-cyan);
+            font-variant-numeric: tabular-nums;
+            color: var(--text-muted);
+            min-width: 60px;
+            text-align: right;
         }
 
-        .live-pulse {
-            width: 8px;
-            height: 8px;
-            background: var(--accent-cyan);
+        /* Scene Specific Overrides */
+        .scene-2-content {
+            grid-column: span 12;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            align-items: center;
+            height: 100%;
+        }
+
+        .feature-card {
+            height: 480px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, transparent 40%, rgba(3, 7, 18, 0.9) 100%);
+            z-index: 1;
+        }
+
+        .feature-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .feature-content h3 {
+            font-size: 28px;
+            margin-bottom: 12px;
+            color: #fff;
+        }
+
+        .feature-content p {
+            font-size: 16px;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* SVG Graph Styling */
+        .mini-graph {
+            width: 100%;
+            height: 60px;
+            margin-top: 12px;
+        }
+
+        /* Scene 3: Propulsion & Dynamics */
+        .scene-3-left {
+            grid-column: span 5;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 24px;
+        }
+
+        .scene-3-right {
+            grid-column: span 7;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            align-content: center;
+        }
+
+        .system-status-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-glass);
+            border-radius: 12px;
+        }
+
+        /* Scene 4: Launch Sequence & Summary */
+        .scene-4-center {
+            grid-column: span 12;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            gap: 32px;
+            height: 100%;
+        }
+
+        .scene-4-center h1 {
+            font-size: 80px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #fff 30%, var(--accent-cyan) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            max-width: 1000px;
+            line-height: 1.1;
+        }
+
+        .cta-button {
+            padding: 20px 48px;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+            color: #fff;
+            font-size: 18px;
+            font-weight: 700;
+            border-radius: 40px;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 0 30px rgba(6, 182, 212, 0.5);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .cta-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 50px rgba(6, 182, 212, 0.8);
+        }
+
+        /* Radar Sweep Animation */
+        .radar-box {
+            position: relative;
+            width: 160px;
+            height: 160px;
             border-radius: 50%;
-            box-shadow: 0 0 10px var(--accent-cyan);
-            animation: pulse 1.5s infinite;
+            border: 1px solid rgba(6, 182, 212, 0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
         }
 
-        @keyframes pulse {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.3; transform: scale(0.8); }
+        .radar-sweep {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: conic-gradient(from 0deg at 50% 50%, rgba(6, 182, 212, 0) 0deg, rgba(6, 182, 212, 0.4) 360deg);
+            border-radius: 50%;
+            animation: rotateRadar 4s linear infinite;
+        }
+
+        @keyframes rotateRadar {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body>
 
-<div class="canvas-container" id="canvasContainer">
-    <!-- Starfield Dynamic Container -->
-    <div class="starfield" id="starfield"></div>
+    <div class="viewport-container" id="viewport">
+        <!-- Ambient Background Particles -->
+        <canvas id="bg-canvas"></canvas>
+        
+        <!-- 3D Full-Bleed HUD Overlay -->
+        <canvas id="hud-canvas"></canvas>
 
-    <!-- Nebula Ambient Background Glows -->
-    <div class="nebula-glow nebula-1" id="nebula1"></div>
-    <div class="nebula-glow nebula-2" id="nebula2"></div>
-
-    <!-- 3D Isometric Glass UI Stage -->
-    <div class="isometric-wrapper">
-        <div class="glass-stage" id="glassStage">
-            
-            <!-- Floating 3D Frosted Glass Spheres -->
-            <div class="glass-sphere sphere-1"></div>
-            <div class="glass-sphere sphere-2"></div>
-            <div class="glass-sphere sphere-3"></div>
-
-            <!-- Glowing Ambient Light Arcs -->
-            <div class="light-arc arc-1"></div>
-            <div class="light-arc arc-2"></div>
-
-            <!-- Stage Header -->
-            <div class="stage-header">
-                <div class="brand-group">
+        <!-- Static UI Layout Layer -->
+        <div class="ui-layer">
+            <!-- Top Header Bar -->
+            <div class="top-bar">
+                <div class="brand-box">
                     <div class="brand-logo">
                         <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
                     </div>
-                    <div class="brand-title">Aether // Mission Zero</div>
+                    <span class="brand-title">AETHERIS // 2026</span>
                 </div>
-                <div class="timeline-indicators">
-                    <div class="timeline-dot active" onclick="jumpToScene(0)"></div>
-                    <div class="timeline-dot" onclick="jumpToScene(1)"></div>
-                    <div class="timeline-dot" onclick="jumpToScene(2)"></div>
-                    <div class="timeline-dot" onclick="jumpToScene(3)"></div>
+                <div class="mission-status">
+                    <div class="badge">
+                        <div class="pulse-dot"></div>
+                        <span id="mission-mode-text">Telemetry Active</span>
+                    </div>
+                    <div class="radar-box">
+                        <div class="radar-sweep"></div>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                    </div>
                 </div>
             </div>
 
-            <!-- Main Scene Viewport -->
-            <div class="scene-viewport">
+            <!-- Bottom Progress Bar -->
+            <div class="bottom-bar">
+                <span class="time-counter" id="current-scene-label">SCENE 01</span>
+                <div class="timeline-container">
+                    <div class="timeline-progress" id="timeline-progress"></div>
+                </div>
+                <span class="time-counter" id="timer-display">00:00 / 00:45</span>
+            </div>
+        </div>
 
-                <!-- Scene 1: Propulsion Engine Telemetry (0s - 10s) -->
-                <div class="scene active" id="scene-0">
-                    <div class="scene-content">
-                        <div class="badge">Phase 01 // Propulsion Matrix</div>
-                        <h1>Plasma Drive <span>Telemetry & Flux</span></h1>
-                        <p class="description">Monitoring magnetic confinement chamber stability, high-impulse vector output, and quantum reactant injection rates across deep-space transit.</p>
-                        <div class="action-group">
-                            <button class="btn-primary" onclick="triggerSceneAction(1)">Calibrate Vectors</button>
-                            <button class="btn-secondary" onclick="jumpToScene(1)">Next Sector</button>
+        <!-- Dynamic Scene Content Container -->
+        <div class="scene-container">
+            
+            <!-- SCENE 1: (0s - 10s) Mission Overview & Orbit Entry -->
+            <div class="scene active" id="scene-1">
+                <div class="hero-text">
+                    <h1>NEXT-GEN DEEP SPACE EXPLORATION.</h1>
+                    <p>Deploying autonomous telemetry networks and deep-space orbital nodes across the outer rim. Real-time synchronicity established.</p>
+                    <div style="display: flex; gap: 16px; margin-top: 12px;">
+                        <div class="badge" style="background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.3); color: var(--accent-emerald);">
+                            <span style="width:6px;height:6px;background:var(--accent-emerald);border-radius:50%;"></span> SYSTEM OPTIMAL
                         </div>
-                    </div>
-                    <div class="visual-display-container">
-                        <div class="main-card">
-                            <div class="card-header-bar">
-                                <div class="card-dots"><span></span><span></span><span></span></div>
-                                <div class="card-title-text">REACTOR_CORE_ALPHA.sys</div>
-                            </div>
-                            <div class="telemetry-grid">
-                                <div class="telemetry-box">
-                                    <span class="metric-label">Core Temperature</span>
-                                    <div class="metric-value" id="tempMetric">4,850 K</div>
-                                    <canvas class="waveform-canvas" id="wave1"></canvas>
-                                </div>
-                                <div class="telemetry-box">
-                                    <span class="metric-label">Magnetic Containment</span>
-                                    <div class="metric-value" id="containmentMetric">99.87%</div>
-                                    <canvas class="waveform-canvas" id="wave2"></canvas>
-                                </div>
-                                <div class="telemetry-box">
-                                    <span class="metric-label">Specific Impulse</span>
-                                    <div class="metric-value">12,450 s</div>
-                                    <span class="metric-label" style="color: #27c93f;">Status: Optimal</span>
-                                </div>
-                                <div class="telemetry-box">
-                                    <span class="metric-label">Reactant Flow</span>
-                                    <div class="metric-value">1.42 kg/s</div>
-                                    <span class="metric-label" style="color: var(--accent-cyan);">Flow Mode: Continuous</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="popout-card" style="top: 40px; right: -40px;">
-                            <div class="popout-icon">⚡</div>
-                            <div class="popout-info">
-                                <h4>Flux Surge Detected</h4>
-                                <p>Shield modulation active (+2.4%)</p>
-                            </div>
-                        </div>
+                        <div class="badge">SECURE QUANTUM LINK</div>
                     </div>
                 </div>
-
-                <!-- Scene 2: Orbital Trajectory Map (10s - 25s) -->
-                <div class="scene" id="scene-1">
-                    <div class="scene-content">
-                        <div class="badge">Phase 02 // Orbital Mechanics</div>
-                        <h1>Exoplanet Transit <span>& Grav Assist</span></h1>
-                        <p class="description">Calculating real-time gravitational slingshot trajectories around gas giant heavy-mass centroids to maximize velocity without fuel expenditure.</p>
-                        <div class="action-group">
-                            <button class="btn-primary" onclick="triggerSceneAction(2)">Lock Trajectory</button>
-                            <button class="btn-secondary" onclick="jumpToScene(2)">Diagnostics</button>
-                        </div>
+                <div class="telemetry-grid">
+                    <div class="glass-card metric-card">
+                        <span class="metric-label">Velocity Vector</span>
+                        <div><span class="metric-value" id="val-vel">28,450</span><span class="metric-unit">KM/H</span></div>
+                        <svg class="mini-graph" viewBox="0 0 100 30"><path d="M0 25 Q 25 5, 50 15 T 100 5" fill="none" stroke="var(--accent-cyan)" stroke-width="2"/></svg>
                     </div>
-                    <div class="visual-display-container">
-                        <div class="main-card">
-                            <div class="card-header-bar">
-                                <div class="card-dots"><span></span><span></span><span></span></div>
-                                <div class="card-title-text">NAVIGATION_MATRIX_v4.map</div>
-                            </div>
-                            <div class="orbit-container">
-                                <div class="planet-core"></div>
-                                <div class="orbit-ring orbit-1">
-                                    <div class="satellite-node"></div>
-                                </div>
-                                <div class="orbit-ring orbit-2">
-                                    <div class="satellite-node" style="background: var(--accent-orange); box-shadow: 0 0 15px var(--accent-orange);"></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="popout-card" style="bottom: 40px; left: -40px;">
-                            <div class="popout-icon">🪐</div>
-                            <div class="popout-info">
-                                <h4>Gravity Well Locked</h4>
-                                <p>Velocity boost: +14.2 km/s</p>
-                            </div>
-                        </div>
+                    <div class="glass-card metric-card">
+                        <span class="metric-label">Orbital Altitude</span>
+                        <div><span class="metric-value" id="val-alt">420.8</span><span class="metric-unit">KM</span></div>
+                        <svg class="mini-graph" viewBox="0 0 100 30"><path d="M0 15 Q 25 20, 50 10 T 100 12" fill="none" stroke="var(--accent-blue)" stroke-width="2"/></svg>
+                    </div>
+                    <div class="glass-card metric-card">
+                        <span class="metric-label">Radiation Shield</span>
+                        <div><span class="metric-value">99.9</span><span class="metric-unit">%</span></div>
+                        <svg class="mini-graph" viewBox="0 0 100 30"><path d="M0 10 Q 25 15, 50 8 T 100 20" fill="none" stroke="var(--accent-emerald)" stroke-width="2"/></svg>
+                    </div>
+                    <div class="glass-card metric-card">
+                        <span class="metric-label">Core Temperature</span>
+                        <div><span class="metric-value">18.4</span><span class="metric-unit">°C</span></div>
+                        <svg class="mini-graph" viewBox="0 0 100 30"><path d="M0 20 Q 25 10, 50 18 T 100 8" fill="none" stroke="var(--accent-violet)" stroke-width="2"/></svg>
                     </div>
                 </div>
-
-                <!-- Scene 3: Deep Space Diagnostics (25s - 38s) -->
-                <div class="scene" id="scene-2">
-                    <div class="scene-content">
-                        <div class="badge">Phase 03 // Subsystem Health</div>
-                        <h1>Autonomous Hull <span>& Life Support</span></h1>
-                        <p class="description">Continuous micro-meteorite impact scanning, radiation dampening field integrity, and hydroponic atmospheric oxygen recycling performance.</p>
-                        <div class="action-group">
-                            <button class="btn-primary" onclick="triggerSceneAction(3)">Run Diagnostics</button>
-                            <button class="btn-secondary" onclick="jumpToScene(3)">Launch Prep</button>
-                        </div>
-                    </div>
-                    <div class="visual-display-container">
-                        <div class="main-card">
-                            <div class="card-header-bar">
-                                <div class="card-dots"><span></span><span></span><span></span></div>
-                                <div class="card-title-text">SUBSYSTEM_DIAGNOSTICS.log</div>
-                            </div>
-                            <div class="diagnostic-grid">
-                                <div class="diagnostic-row">
-                                    <div class="diagnostic-name">🛡️ Radiation Shielding Array</div>
-                                    <div class="status-badge nominal">Nominal</div>
-                                </div>
-                                <div class="diagnostic-row">
-                                    <div class="diagnostic-name">🌱 Hydroponic Oxygen Regenerator</div>
-                                    <div class="status-badge nominal">Nominal</div>
-                                </div>
-                                <div class="diagnostic-row">
-                                    <div class="diagnostic-name">📡 Deep Space Quantum Array</div>
-                                    <div class="status-badge nominal">Nominal</div>
-                                </div>
-                                <div class="diagnostic-row">
-                                    <div class="diagnostic-name">⚙️ Cryogenic Fuel Pump Assembly</div>
-                                    <div class="status-badge nominal">Nominal</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="popout-card" style="top: 60px; right: -30px;">
-                            <div class="popout-icon">🛡️</div>
-                            <div class="popout-info">
-                                <h4>Hull Integrity 100%</h4>
-                                <p>Zero micro-fractures logged</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Scene 4: Interstellar Launch Protocol (38s - 45s) -->
-                <div class="scene" id="scene-3">
-                    <div class="scene-content">
-                        <div class="badge">Phase 04 // Final Execution</div>
-                        <h1>Interstellar Jump <span>Sequence Ready</span></h1>
-                        <p class="description">All parameters verified. Alcubierre warp bubble generators primed for spatial folding and instant transit across stellar quadrants.</p>
-                        <div class="action-group">
-                            <button class="btn-primary" style="background: linear-gradient(135deg, var(--accent-orange), #ff9900);" onclick="executeLaunch()">Initiate Jump</button>
-                            <button class="btn-secondary" onclick="jumpToScene(0)">Restart Showcase</button>
-                        </div>
-                    </div>
-                    <div class="visual-display-container">
-                        <div class="main-card">
-                            <div class="card-header-bar">
-                                <div class="card-dots"><span></span><span></span><span></span></div>
-                                <div class="card-title-text">WARP_GATE_CONTROLLER.exe</div>
-                            </div>
-                            <div class="launch-control-box">
-                                <span class="metric-label">T-Minus to Quantum Jump</span>
-                                <div class="countdown-timer" id="countdownTimer">00:07</div>
-                                <p class="description" style="font-size: 16px;">Warp bubble stabilization field active. Stand by for acceleration.</p>
-                            </div>
-                        </div>
-                        <div class="popout-card" style="bottom: 50px; right: -30px;">
-                            <div class="popout-icon">🚀</div>
-                            <div class="popout-info">
-                                <h4>Destination Locked</h4>
-                                <p>Alpha Centauri Prime</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
             </div>
 
-            <!-- Stage Footer / Player Controls -->
-            <div class="stage-footer">
-                <div class="player-controls">
-                    <button class="control-btn" id="playPauseBtn" onclick="togglePlayPause()" title="Pause / Play">
-                        <svg id="playPauseIcon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                            <rect x="6" y="4" width="4" height="16" rx="1"></rect>
-                            <rect x="14" y="4" width="4" height="16" rx="1"></rect>
-                        </svg>
-                    </button>
-                    <button class="control-btn" onclick="restartShowcase()" title="Restart">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
-                            <path d="M3 3v5h5"></path>
-                        </svg>
-                    </button>
-                    <div class="progress-bar-track" id="progressTrack" onclick="seekTimeline(event)">
-                        <div class="progress-bar-fill" id="progressFill"></div>
+            <!-- SCENE 2: (10s - 24s) Advanced Propulsion & Core Systems -->
+            <div class="scene" id="scene-2">
+                <div class="scene-2-content">
+                    <div class="glass-card feature-card">
+                        <div class="feature-content">
+                            <h3>ION THRUSTER ARRAY</h3>
+                            <p>Continuous plasma acceleration yielding 45% higher specific impulse for deep-space trajectory adjustments.</p>
+                        </div>
                     </div>
-                    <div class="time-display" id="timeDisplay">00:00 / 00:45</div>
+                    <div class="glass-card feature-card">
+                        <div class="feature-content">
+                            <h3>QUANTUM NAVIGATION</h3>
+                            <p>Autonomous stellar mapping independent of ground stations, enabling sub-millisecond route correction.</p>
+                        </div>
+                    </div>
+                    <div class="glass-card feature-card">
+                        <div class="feature-content">
+                            <h3>DARK MATTER SENSORS</h3>
+                            <p>High-sensitivity anomaly detection scanning spatial curvature and gravitational wave anomalies.</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="showcase-status">
-                    <div class="live-pulse"></div>
-                    <span id="statusText">PROD KEYNOTE LIVE</span>
+            </div>
+
+            <!-- SCENE 3: (24s - 36s) Planetary Reconnaissance & Telemetry -->
+            <div class="scene" id="scene-3">
+                <div class="scene-3-left">
+                    <h1 style="font-size: 56px; line-height: 1.1;">PLANETARY RECONNAISSANCE.</h1>
+                    <p style="color: var(--text-muted); font-size: 18px;">Executing multi-spectral atmospheric absorption analysis and subsurface mineral mapping in real time.</p>
+                    <div class="glass-card" style="padding: 16px; display: flex; align-items: center; gap: 16px;">
+                        <div class="pulse-dot" style="background: var(--accent-rose); box-shadow: 0 0 12px var(--accent-rose);"></div>
+                        <div>
+                            <div style="font-size: 14px; font-weight: 700;">TARGET ACQUIRED</div>
+                            <div style="font-size: 12px; color: var(--text-muted);">Sector 7-Delta / Exoplanet Prime</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="scene-3-right">
+                    <div class="glass-card system-status-row">
+                        <div>
+                            <div class="metric-label">Atmosphere Density</div>
+                            <div style="font-size: 20px; font-weight: 700; margin-top: 4px;">1.42 ATM</div>
+                        </div>
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                    </div>
+                    <div class="glass-card system-status-row">
+                        <div>
+                            <div class="metric-label">Magnetic Field</div>
+                            <div style="font-size: 20px; font-weight: 700; margin-top: 4px;">0.85 GAUSS</div>
+                        </div>
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--accent-blue)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                    </div>
+                    <div class="glass-card system-status-row">
+                        <div>
+                            <div class="metric-label">Surface Water Index</div>
+                            <div style="font-size: 20px; font-weight: 700; margin-top: 4px;">68.4%</div>
+                        </div>
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--accent-emerald)" stroke-width="2"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
+                    </div>
+                    <div class="glass-card system-status-row">
+                        <div>
+                            <div class="metric-label">Solar Flux Capture</div>
+                            <div style="font-size: 20px; font-weight: 700; margin-top: 4px;">1.28 kW/m²</div>
+                        </div>
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--accent-violet)" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SCENE 4: (36s - 45s) Final Launch Sequence & Call to Action -->
+            <div class="scene" id="scene-4">
+                <div class="scene-4-center">
+                    <div class="badge" style="font-size: 16px; padding: 10px 24px;">LAUNCH SEQUENCE INITIATED</div>
+                    <h1>THE UNIVERSE IS WITHIN OUR REACH.</h1>
+                    <p style="color: var(--text-muted); font-size: 20px; max-width: 700px;">Join the frontier of commercial deep space operations. Secure your node allocation today.</p>
+                    <button class="cta-button" onclick="window.location.reload();">RESTART EXPERIENCE</button>
                 </div>
             </div>
 
         </div>
     </div>
-</div>
 
-<script>
-    // Scale Canvas to fit any window securely while keeping 1920x1080 resolution
-    function updateCanvasScale() {
-        const container = document.getElementById('canvasContainer');
-        const widthScale = window.innerWidth / 1920;
-        const heightScale = window.innerHeight / 1080;
-        const scale = Math.min(widthScale, heightScale);
-        container.style.transform = `scale(${scale})`;
-    }
-    window.addEventListener('resize', updateCanvasScale);
-    updateCanvasScale();
-
-    // Procedural Starfield Generation
-    const starfield = document.getElementById('starfield');
-    const starCount = 150;
-    for (let i = 0; i < starCount; i++) {
-        const star = document.createElement('div');
-        star.classList.add('star');
-        const size = Math.random() * 3;
-        star.style.width = `${size}px`;
-        star.style.height = `${size}px`;
-        star.style.top = `${Math.random() * 100}%`;
-        star.style.left = `${Math.random() * 100}%`;
-        star.style.setProperty('--duration', `${2 + Math.random() * 4}s`);
-        star.style.animationDelay = `${Math.random() * 5}s`;
-        starfield.appendChild(star);
-    }
-
-    // Interactive Mouse Tilt on Glass Stage
-    const glassStage = document.getElementById('glassStage');
-    document.addEventListener('mousemove', (e) => {
-        const xPos = (e.clientX / window.innerWidth - 0.5) * 16;
-        const yPos = (e.clientY / window.innerHeight - 0.5) * -16;
-        glassStage.style.transform = `perspective(1400px) rotateY(${ -12 + xPos }deg) rotateX(${ 6 + yPos }deg)`;
-    });
-
-    // Timeline & Scene Management (45-second production showcase with setTimeout triggers at 0s, 10s, 25s, 38s)
-    let currentSceneIndex = 0;
-    let isPlaying = true;
-    let startTime = Date.now();
-    let pausedTimeElapsed = 0;
-    let totalDuration = 45000; // 45 seconds
-    let sceneTimeouts = [];
-
-    const sceneDurations = [10000, 15000, 13000, 7000]; // Scene split intervals
-    const sceneTimestamps = [0, 10000, 25000, 38000];
-
-    function setupSceneTimeouts() {
-        // Clear existing
-        sceneTimeouts.forEach(t => clearTimeout(t));
-        sceneTimeouts = [];
-
-        sceneTimestamps.forEach((timestamp, index) => {
-            let delay = timestamp - (pausedTimeElapsed);
-            if (delay >= 0) {
-                let timeout = setTimeout(() => {
-                    if (isPlaying) {
-                        switchScene(index);
-                    }
-                }, delay);
-                sceneTimeouts.push(timeout);
-            }
-        });
-    }
-
-    function switchScene(index) {
-        currentSceneIndex = index;
-        const scenes = document.querySelectorAll('.scene');
-        const dots = document.querySelectorAll('.timeline-dot');
-
-        scenes.forEach((scene, i) => {
-            scene.classList.toggle('active', i === index);
-        });
-
-        dots.forEach((dot, i) => {
-            dot.classList.toggle('active', i === index);
-        });
-
-        // Dynamic Nebula color shift per scene
-        const neb1 = document.getElementById('nebula1');
-        const neb2 = document.getElementById('nebula2');
-        if (index === 0) {
-            neb1.style.background = 'rgba(121, 40, 202, 0.4)';
-            neb2.style.background = 'rgba(0, 240, 255, 0.3)';
-        } else if (index === 1) {
-            neb1.style.background = 'rgba(0, 119, 255, 0.4)';
-            neb2.style.background = 'rgba(0, 240, 255, 0.2)';
-        } else if (index === 2) {
-            neb1.style.background = 'rgba(39, 201, 63, 0.3)';
-            neb2.style.background = 'rgba(0, 240, 255, 0.3)';
-        } else if (index === 3) {
-            neb1.style.background = 'rgba(255, 77, 0, 0.4)';
-            neb2.style.background = 'rgba(121, 40, 202, 0.4)';
+    <script>
+        // Responsive Scaling to maintain exact 1920x1080 resolution
+        function resizeViewport() {
+            const container = document.getElementById('viewport');
+            const widthScale = window.innerWidth / 1920;
+            const heightScale = window.innerHeight / 1080;
+            const scale = Math.min(widthScale, heightScale);
+            container.style.transform = `scale(${scale})`;
         }
-    }
+        window.addEventListener('resize', resizeViewport);
+        resizeViewport();
 
-    function jumpToScene(index) {
-        pausedTimeElapsed = sceneTimestamps[index];
-        startTime = Date.now() - pausedTimeElapsed;
-        switchScene(index);
-        setupSceneTimeouts();
-    }
+        // Canvas Background - Ambient Stars & Nebula Particles
+        const bgCanvas = document.getElementById('bg-canvas');
+        const bgCtx = bgCanvas.getContext('2d');
+        bgCanvas.width = 1920;
+        bgCanvas.height = 1080;
 
-    function togglePlayPause() {
-        isPlaying = !isPlaying;
-        const icon = document.getElementById('playPauseIcon');
-        const statusText = document.getElementById('statusText');
-
-        if (isPlaying) {
-            startTime = Date.now() - pausedTimeElapsed;
-            setupSceneTimeouts();
-            icon.innerHTML = '<rect x="6" y="4" width="4" height="16" rx="1"></rect><rect x="14" y="4" width="4" height="16" rx="1"></rect>';
-            statusText.innerText = "PROD KEYNOTE LIVE";
-        } else {
-            pausedTimeElapsed = Date.now() - startTime;
-            sceneTimeouts.forEach(t => clearTimeout(t));
-            icon.innerHTML = '<polygon points="5 3 19 12 5 21 5 3"></polygon>';
-            statusText.innerText = "PAUSED";
+        const stars = [];
+        for (let i = 0; i < 400; i++) {
+            stars.push({
+                x: Math.random() * bgCanvas.width,
+                y: Math.random() * bgCanvas.height,
+                size: Math.random() * 2.5,
+                alpha: Math.random(),
+                speed: Math.random() * 0.2 + 0.05
+            });
         }
-    }
 
-    function restartShowcase() {
-        pausedTimeElapsed = 0;
-        startTime = Date.now();
-        isPlaying = true;
-        document.getElementById('playPauseIcon').innerHTML = '<rect x="6" y="4" width="4" height="16" rx="1"></rect><rect x="14" y="4" width="4" height="16" rx="1"></rect>';
-        document.getElementById('statusText').innerText = "PROD KEYNOTE LIVE";
-        jumpToScene(0);
-    }
+        function drawBackground() {
+            bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+            
+            // Draw gradient background glow
+            const gradient = bgCtx.createRadialGradient(960, 540, 100, 960, 540, 1200);
+            gradient.addColorStop(0, '#0f172a');
+            gradient.addColorStop(0.5, '#070b19');
+            gradient.addColorStop(1, '#030712');
+            bgCtx.fillStyle = gradient;
+            bgCtx.fillRect(0, 0, bgCanvas.width, bgCanvas.height);
 
-    function seekTimeline(e) {
-        const track = document.getElementById('progressTrack');
-        const rect = track.getBoundingClientRect();
-        const pos = (e.clientX - rect.left) / rect.width;
-        const targetTime = pos * totalDuration;
-        
-        pausedTimeElapsed = targetTime;
-        startTime = Date.now() - pausedTimeElapsed;
+            // Draw stars
+            stars.forEach(star => {
+                star.alpha += (Math.random() - 0.5) * 0.05;
+                if (star.alpha < 0.1) star.alpha = 0.1;
+                if (star.alpha > 1) star.alpha = 1;
 
-        // Determine correct scene index based on target time
-        let targetScene = 0;
-        for (let i = sceneTimestamps.length - 1; i >= 0; i--) {
-            if (targetTime >= sceneTimestamps[i]) {
-                targetScene = i;
-                break;
-            }
+                bgCtx.fillStyle = `rgba(255, 255, 255, ${star.alpha})`;
+                bgCtx.beginPath();
+                bgCtx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+                bgCtx.fill();
+
+                star.y -= star.speed;
+                if (star.y < 0) star.y = bgCanvas.height;
+            });
+
+            requestAnimationFrame(drawBackground);
         }
-        switchScene(targetScene);
-        if (isPlaying) {
-            setupSceneTimeouts();
+        drawBackground();
+
+        // 3D Full-Bleed HUD Canvas - Futuristic Orbital Rings & Wireframes
+        const hudCanvas = document.getElementById('hud-canvas');
+        const hudCtx = hudCanvas.getContext('2d');
+        hudCanvas.width = 1920;
+        hudCanvas.height = 1080;
+
+        let hudAngle = 0;
+        function drawHUD() {
+            hudCtx.clearRect(0, 0, hudCanvas.width, hudCanvas.height);
+            
+            hudCtx.save();
+            hudCtx.translate(1400, 540); // Center of HUD graphics on right side
+            hudCtx.rotate(hudAngle);
+
+            // Outer Orbit Ring
+            hudCtx.strokeStyle = 'rgba(6, 182, 212, 0.2)';
+            hudCtx.lineWidth = 2;
+            hudCtx.beginPath();
+            hudCtx.arc(0, 0, 320, 0, Math.PI * 1.5);
+            hudCtx.stroke();
+
+            // Inner Dashed Ring
+            hudCtx.strokeStyle = 'rgba(59, 130, 246, 0.4)';
+            hudCtx.lineWidth = 4;
+            hudCtx.setLineDash([10, 15]);
+            hudCtx.beginPath();
+            hudCtx.arc(0, 0, 260, 0, Math.PI * 2);
+            hudCtx.stroke();
+            hudCtx.setLineDash([]);
+
+            // Center Target Crosshair
+            hudCtx.strokeStyle = 'rgba(6, 182, 212, 0.6)';
+            hudCtx.lineWidth = 1;
+            hudCtx.beginPath();
+            hudCtx.moveTo(-40, 0); hudCtx.lineTo(-10, 0);
+            hudCtx.moveTo(10, 0); hudCtx.lineTo(40, 0);
+            hudCtx.moveTo(0, -40); hudCtx.lineTo(0, -10);
+            hudCtx.moveTo(0, 10); hudCtx.lineTo(0, 40);
+            hudCtx.stroke();
+
+            hudCtx.restore();
+
+            hudAngle += 0.003;
+            requestAnimationFrame(drawHUD);
         }
-    }
+        drawHUD();
 
-    function triggerSceneAction(actionId) {
-        if(actionId === 1) {
-            alert("Propulsion telemetry vectors re-calibrated successfully. Core stability confirmed.");
-        } else if(actionId === 2) {
-            alert("Gravity assist slingshot locked. Trajectory optimized for maximum efficiency.");
-        } else if(actionId === 3) {
-            alert("Subsystem diagnostics completed. All 42 telemetry nodes report nominal status.");
+        // Video Timeline & Scene Automation Manager (45s total duration)
+        const totalDuration = 45; // seconds
+        let currentTime = 0;
+        const timerDisplay = document.getElementById('timer-display');
+        const timelineProgress = document.getElementById('timeline-progress');
+        const currentSceneLabel = document.getElementById('current-scene-label');
+        const missionModeText = document.getElementById('mission-mode-text');
+
+        const scenes = [
+            { id: 'scene-1', start: 0, label: 'SCENE 01', mode: 'Telemetry Active' },
+            { id: 'scene-2', start: 10, label: 'SCENE 02', mode: 'Propulsion Array' },
+            { id: 'scene-3', start: 24, label: 'SCENE 03', mode: 'Planetary Recon' },
+            { id: 'scene-4', start: 36, label: 'SCENE 04', mode: 'Launch Sequence' }
+        ];
+
+        function switchScene(sceneId) {
+            document.querySelectorAll('.scene').forEach(s => s.classList.remove('active'));
+            document.getElementById(sceneId).classList.add('active');
         }
-    }
 
-    function executeLaunch() {
-        alert("INTERSTELLAR JUMP INITIATED. Preparing for faster-than-light transit.");
-    }
+        // Scene trigger schedule via setTimeout / setInterval
+        setTimeout(() => { switchScene('scene-2'); }, 10000);
+        setTimeout(() => { switchScene('scene-3'); }, 24000);
+        setTimeout(() => { switchScene('scene-4'); }, 36000);
 
-    // Main Animation Loop & Progress Bar Updater
-    function updateMasterLoop() {
-        if (isPlaying) {
-            const now = Date.now();
-            pausedTimeElapsed = now - startTime;
+        // Main Timer Loop
+        setInterval(() => {
+            currentTime += 0.1;
+            if (currentTime > totalDuration) currentTime = totalDuration;
 
-            if (pausedTimeElapsed >= totalDuration) {
-                restartShowcase();
-                return;
-            }
+            // Format time display MM:SS / MM:SS
+            const curMinutes = String(Math.floor(currentTime / 60)).padStart(2, '0');
+            const curSeconds = String(Math.floor(currentTime % 60)).padStart(2, '0');
+            timerDisplay.textContent = `${curMinutes}:${curSeconds} / 00:45`;
 
             // Update Progress Bar
-            const progressPercent = (pausedTimeElapsed / totalDuration) * 100;
-            document.getElementById('progressFill').style.width = `${progressPercent}%`;
+            const percent = (currentTime / totalDuration) * 100;
+            timelineProgress.style.width = `${percent}%`;
 
-            // Update Time Display
-            const elapsedSec = Math.floor(pausedTimeElapsed / 1000);
-            const mins = String(Math.floor(elapsedSec / 60)).padStart(2, '0');
-            const secs = String(elapsedSec % 60).padStart(2, '0');
-            document.getElementById('timeDisplay').setAttribute('data-time', `${mins}:${secs}`);
-            document.getElementById('timeDisplay').innerText = `${mins}:${secs} / 00:45`;
-
-            // Countdown timer for Scene 4
-            if (currentSceneIndex === 3) {
-                let remainingJumpSec = Math.max(0, 7 - Math.floor((pausedTimeElapsed - 38000) / 1000));
-                document.getElementById('countdownTimer').innerText = `00:0${remainingJumpSec}`;
+            // Update Scene labels dynamically based on time
+            for (let i = scenes.length - 1; i >= 0; i--) {
+                if (currentTime >= scenes[i].start) {
+                    currentSceneLabel.textContent = scenes[i].label;
+                    missionModeText.textContent = scenes[i].mode;
+                    break;
+                }
             }
-        }
-        requestAnimationFrame(updateMasterLoop);
-    }
-    requestAnimationFrame(updateMasterLoop);
 
-    // Initialize Scene Timeouts
-    setupSceneTimeouts();
-
-    // Draw Dynamic Waveform Canvases for Scene 1
-    function drawWaveforms() {
-        ['wave1', 'wave2'].forEach(id => {
-            const canvas = document.getElementById(id);
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-            canvas.width = canvas.offsetWidth;
-            canvas.height = canvas.offsetHeight;
-
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.beginPath();
-            ctx.strokeStyle = id === 'wave1' ? '#00f0ff' : '#7928ca';
-            ctx.lineWidth = 2;
-
-            const sliceWidth = canvas.width / 50;
-            let x = 0;
-            for (let i = 0; i < 50; i++) {
-                const v = Math.sin((i + Date.now() * 0.01) * 0.3) * (canvas.height / 3) + (canvas.height / 2);
-                if (i === 0) ctx.moveTo(x, v);
-                else ctx.lineTo(x, v);
-                x += sliceWidth;
+            // Fluctuate telemetry values realistically
+            const velEl = document.getElementById('val-vel');
+            if (velEl) {
+                const baseVel = 28450 + Math.floor(Math.sin(currentTime) * 45);
+                velEl.textContent = baseVel.toLocaleString();
             }
-            ctx.stroke();
-        });
-        requestAnimationFrame(drawWaveforms);
-    }
-    requestAnimationFrame(drawWaveforms);
 
-</script>
+        }, 100);
+    </script>
 </body>
 </html>

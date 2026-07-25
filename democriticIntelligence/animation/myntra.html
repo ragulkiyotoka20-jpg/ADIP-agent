@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Myntra - Slay Karo, Settle Nahi | Launch Experience</title>
+    <style>
+        :root {
+            --primary: #E72744;
+            --accent: #FD913C;
+            --midnight: #29303E;
+            --midnight-dark: #1b2028;
+            --white: #FFFFFF;
+            --gray-light: #F4F4F5;
+            --gray-text: #94A3B8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            user-select: none;
+        }
+
+        body {
+            width: 1920px;
+            height: 1080px;
+            overflow: hidden;
+            background-color: var(--midnight-dark);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .viewport-container {
+            width: 1920px;
+            height: 1080px;
+            position: relative;
+            background: radial-gradient(circle at 50% 50%, #384154 0%, var(--midnight) 100%);
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Background Animated Particles */
+        .ambient-glow {
+            position: absolute;
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(231, 39, 68, 0.15) 0%, rgba(0,0,0,0) 70%);
+            border-radius: 50%;
+            animation: ambientPulse 8s infinite alternate ease-in-out;
+            z-index: 1;
+        }
+
+        .ambient-glow-2 {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(253, 145, 60, 0.12) 0%, rgba(0,0,0,0) 70%);
+            border-radius: 50%;
+            top: 100px;
+            right: 200px;
+            animation: ambientPulse 6s infinite alternate-reverse ease-in-out;
+            z-index: 1;
+        }
+
+        @keyframes ambientPulse {
+            0% { transform: scale(1) translate(0, 0); opacity: 0.6; }
+            100% { transform: scale(1.2) translate(30px, -20px); opacity: 1; }
+        }
+
+        /* Phone Frame Container */
+        .phone-frame {
+            width: 420px;
+            height: 880px;
+            background: var(--midnight);
+            border-radius: 48px;
+            box-shadow: 0 30px 90px rgba(0, 0, 0, 0.7), inset 0 0 0 2px rgba(255, 255, 255, 0.15);
+            position: relative;
+            z-index: 10;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            animation: phoneFloat 5s infinite ease-in-out;
+        }
+
+        @keyframes phoneFloat {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-12px) rotate(0.5deg); }
+        }
+
+        /* Phone Notch & Status Bar */
+        .phone-notch {
+            position: absolute;
+            top: 0;
+            left: 50%
+</html>
