@@ -4,6 +4,7 @@ import subprocess
 from .animation_generator import AnimationGenerator
 from .script_writer import ScriptWriter
 from .composer import UniversalComposer
+from .thumbnail_generator import ThumbnailGenerator
 
 # Fix Windows console encoding
 if sys.platform == 'win32':
@@ -21,7 +22,8 @@ class UniversalDirectorAgent:
     2. Asks Gemini to WRITE the complete HTML/CSS/JS animation code for the topic
     3. Asks Gemini to WRITE the voiceover narration matching the generated visuals
     4. Generates audio + subtitles via Edge-TTS
-    5. Records the animation + merges into final MP4
+    5. Asks Gemini to GENERATE a thumbnail image for the topic
+    6. Records the animation + merges into final MP4
     
     NOTHING is hardcoded -- Gemini decides the app name, colors, UI layout,
     metrics, content, narration -- everything.
@@ -31,6 +33,7 @@ class UniversalDirectorAgent:
         self.animation_gen = AnimationGenerator()
         self.script_writer = ScriptWriter()
         self.composer = UniversalComposer()
+        self.thumbnail_gen = ThumbnailGenerator()
 
     def run(self, topic: str) -> str:
         """Run the complete video pipeline for any topic."""
@@ -44,7 +47,7 @@ class UniversalDirectorAgent:
         
         # -- Step 1: Ask Gemini to generate the FULL animation code --
         print(f"\n{'-'*50}")
-        print(f"[Step 1/4] GEMINI -> Generate complete animation for '{topic}'")
+        print(f"[Step 1/5] GEMINI -> Generate complete animation for '{topic}'")
         print(f"  Opening Chromium -> gemini.google.com...")
         print(f"{'-'*50}")
         
@@ -60,7 +63,7 @@ class UniversalDirectorAgent:
         
         # -- Step 2: Ask Gemini for voiceover narration --
         print(f"\n{'-'*50}")
-        print(f"[Step 2/4] GEMINI -> Generate voiceover narration")
+        print(f"[Step 2/5] GEMINI -> Generate voiceover narration")
         print(f"  Opening Chromium -> gemini.google.com...")
         print(f"{'-'*50}")
         
@@ -79,7 +82,7 @@ class UniversalDirectorAgent:
         captions_file = f"{safe_topic}_captions.vtt"
         
         print(f"\n{'-'*50}")
-        print(f"[Step 3/4] Edge-TTS -> Generate audio + subtitles")
+        print(f"[Step 3/5] Edge-TTS -> Generate audio + subtitles")
         print(f"{'-'*50}")
         
         try:
@@ -96,7 +99,7 @@ class UniversalDirectorAgent:
 
         # -- Step 4: Record animation + compose final video --
         print(f"\n{'-'*50}")
-        print(f"[Step 4/4] Composer -> Record animation + merge audio")
+        print(f"[Step 4/5] Composer -> Record animation + merge audio")
         print(f"{'-'*50}")
         
         video_output = self.composer.compose(
@@ -106,13 +109,30 @@ class UniversalDirectorAgent:
             captions_file=captions_file
         )
         
+        # -- Step 5: Generate thumbnail via Gemini image generation --
+        print(f"\n{'-'*50}")
+        print(f"[Step 5/5] GEMINI -> Generate thumbnail image")
+        print(f"  Opening Chromium -> gemini.google.com...")
+        print(f"{'-'*50}")
+        
+        thumbnail_path = self.thumbnail_gen.generate(
+            topic=topic,
+            app_name=app_name
+        )
+        
+        if thumbnail_path:
+            print(f"  [OK] Thumbnail: {thumbnail_path}")
+        else:
+            print(f"  [SKIP] Thumbnail generation skipped")
+        
         print(f"\n{'='*60}")
         print(f"  VIDEO CREATED SUCCESSFULLY!")
         print(f"  ")
-        print(f"  Topic:    {topic}")
-        print(f"  App:      {app_name}")
-        print(f"  Tagline:  {app_tagline}")
-        print(f"  Output:   {video_output}")
+        print(f"  Topic:      {topic}")
+        print(f"  App:        {app_name}")
+        print(f"  Tagline:    {app_tagline}")
+        print(f"  Video:      {video_output}")
+        print(f"  Thumbnail:  {thumbnail_path or 'N/A'}")
         print(f"{'='*60}")
         
         return video_output

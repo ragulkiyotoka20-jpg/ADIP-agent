@@ -4,7 +4,10 @@
 *.mp3
 *.vtt
 *.srt
+*.png
 temp_rec_*
 gemini_user_data*
+gemini_debug_screenshots*
 __pycache__/
 *.pyc
+
