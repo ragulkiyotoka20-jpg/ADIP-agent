@@ -37,12 +37,14 @@ class VideoComposer:
                 page.wait_for_timeout(46000)
                 
                 video = page.video
-                video_path = video.path()
-                browser.close()
+                page.close()
+                context.close()
                 
                 if os.path.exists(raw_output):
                     os.remove(raw_output)
-                os.rename(video_path, raw_output)
+                
+                video.save_as(raw_output)
+                browser.close()
         
         # Merge Video, Audio, and Burn Subtitles using high-quality FFmpeg flags
         print(f"Merging AI voiceover {voice_track} and burning subtitles {captions_file}...")
