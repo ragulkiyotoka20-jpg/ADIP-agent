@@ -1,7 +1,17 @@
 """FastAPI REST Web Service exposing Agent Orchestration endpoints."""
 
+import sys
 import logging
+from pathlib import Path
+
+# Ensure project root is in sys.path
+root_dir = Path(__file__).resolve().parent.parent.parent
+if str(root_dir) not in sys.path:
+    sys.path.insert(0, str(root_dir))
+
 from fastapi import FastAPI, HTTPException, status
+from fastapi.middleware.cors import CORSMiddleware
+
 from agents.orchestrator.orchestrator import OrchestratorAgent
 from agents.orchestrator.models import OrchestrationRequest, OrchestrationResponse
 
@@ -13,6 +23,15 @@ app = FastAPI(
     title="APIP Orchestrator API",
     description="REST API for Autonomous Product Intelligence Platform Agent Orchestration",
     version="1.0.0",
+)
+
+# Enable CORS for frontend web apps / dashboards
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 orchestrator = OrchestratorAgent()
@@ -57,3 +76,8 @@ async def trigger_orchestration(request: OrchestrationRequest):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Orchestration workflow failed: {str(e)}",
         )
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("agents.orchestrator.api:app", host="0.0.0.0", port=8000, reload=True)

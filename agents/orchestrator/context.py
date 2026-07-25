@@ -6,7 +6,6 @@ between pipeline agents.
 
 import time
 from typing import Dict, Any, List, Optional, MutableMapping
-from pydantic import BaseModel, Field
 
 
 class ExecutionContext(MutableMapping):
@@ -61,6 +60,10 @@ class ExecutionContext(MutableMapping):
 
     def __len__(self) -> int:
         return len(self._store)
+
+    def get(self, key: str, default: Any = None) -> Any:
+        """Safe dict getter."""
+        return self._store.get(key, default)
 
     # Attribute access convenience
     def __getattr__(self, name: str) -> Any:
