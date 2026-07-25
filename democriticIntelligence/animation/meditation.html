@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zenith Meditation App Showcase</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            width: 1920px;
+            height: 1080px;
+            background-color: #0b0f19;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .video-container {
+            width: 1920px;
+            height: 1080px;
+            position: relative;
+            background: radial-gradient(circle at 50% 50%, #131c31 0%, #080b11 100%);
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Glowing Orbs */
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: 1;
+            opacity: 0.5;
+            animation: floatOrb 12s ease-in-out infinite alternate;
+        }
+
+        .orb-1 {
+            width: 500px;
+            height: 500px;
+            background: linear-gradient(135deg, #6366f1, #3b82f6);
+            top: 10%;
+            left: 15%;
+        }
+
+        .orb-2 {
+            width: 600px;
+            height: 600px;
+            background: linear-gradient(135deg, #10b981, #06b6d4);
+            bottom: 5%;
+            right: 15%;
+            animation-delay: -6s;
+        }
+
+        @keyframes floatOrb {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(40px, -50px) scale(1.1); }
+            100% { transform: translate(-30px, 30px) scale(0.95); }
+        }
+
+        /* Phone Mockup Frame */
+        .phone-frame {
+            width: 440px;
+            height: 880px;
+            background: #111827;
+            border-radius: 48px;
+            border: 4px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), 0 0 40px rgba(99, 102, 241, 0.2);
+            position: relative;
+            z-index: 10;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Phone Notch/Speaker */
+        .phone-notch {
+            position: absolute;
+            top: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 24px;
+            background: #000;
+            border-radius: 12px;
+            z-index: 100;
+        }
+
+        /* App Screen Area */
+        .app-screen {
+            width: 100%;
+            height: 100%;
+            padding: 48px 24px 24px 24px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            color: #ffffff;
+            overflow: hidden;
+        }
+
+        /* View Panels (Phases) */
+        .view-panel {
+            position: absolute;
+            top: 48px;
+            left: 24px;
+            right: 24px;
+            bottom: 24px;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.6s ease, transform 0.6s ease;
+            transform: translateY(20px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .view-panel.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        /* Glassmorphic Card */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        /* Typography & Common Elements */
+        .header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .user-greeting h3 {
+            font-size: 14px;
+            font-weight: 400;
+            color: #9ca3af;
+        }
+
+        .user-greeting h1 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #f3f4f6;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #10b981, #3b82f6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        /* Phase 1: Dashboard */
+        .streak-badge {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(59, 130, 246, 0.15));
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .streak-icon {
+            font-size: 28px;
+        }
+
+        .streak-info h4 {
+            font-size: 12px;
+            color: #10b981;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .streak-info p {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .metric-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .metric-card span {
+            font-size: 12px;
+            color: #9ca3af;
+        }
+
+        .metric-card h3 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #34d399;
+        }
+
+        .recommendation-card {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(59, 130, 246, 0.1));
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 16px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .recommendation-card span {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #818cf8;
+            font-weight: 600;
+        }
+
+        .recommendation-card h4 {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .recommendation-card p {
+            font-size: 12px;
+            color: #9ca3af;
+        }
+
+        /* Phase 2: Live Activity Mode */
+        .live-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .live-header h3 {
+            font-size: 14px;
+            color: #34d399;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 4px;
+        }
+
+        .live-header h2 {
+            font-size: 22px;
+            font-weight: 600;
+        }
+
+        .timer-display {
+            font-size: 56px;
+            font-weight: 700;
+            text-align: center;
+            letter-spacing: 2px;
+            margin: 10px 0;
+            color: #ffffff;
+            text-shadow: 0 0 20px rgba(52, 211, 153, 0.4);
+        }
+
+        .pulse-ring-container {
+            position: relative;
+            width: 140px;
+            height: 140px;
+            margin: 10px auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .pulse-core {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #10b981, #06b6d4);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 28px;
+            z-index: 2;
+            box-shadow: 0 0 25px rgba(16, 185, 129, 0.6);
+            animation: corePulse 3s ease-in-out infinite;
+        }
+
+        @keyframes corePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+        }
+
+        .pulse-wave {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 2px solid rgba(16, 185, 129, 0.5);
+            animation: waveExpand 3s linear infinite;
+        }
+
+        .pulse-wave:nth-child(2) {
+            animation-delay: 1.5s;
+        }
+
+        @keyframes waveExpand {
+            0% { transform: scale(0.8); opacity: 1; }
+            100% { transform: scale(1.6); opacity: 0; }
+        }
+
+        .ecg-container {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 16px;
+            padding: 12px;
+            margin-top: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .ecg-container span {
+            font-size: 11px;
+            color: #9ca3af;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .live-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 15px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 14px;
+            padding: 12px;
+        }
+
+        .live-stat-item {
+            text-align: center;
+        }
+
+        .live-stat-item span {
+            font-size: 11px;
+            color: #9ca3af;
+            display: block;
+        }
+
+        .live-stat-item h4 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #34d399;
+            margin-top: 2px;
+        }
+
+        /* Phase 3: Achievement/Completion */
+        .achievement-container {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+        }
+
+        .trophy-badge {
+            width: 90px;
+            height: 90px;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 42px;
+            margin-bottom: 16px;
+            box-shadow: 0 0 30px rgba(245, 158, 11, 0.5);
+            animation: bounceTrophy 2s ease-in-out infinite;
+        }
+
+        @keyframes bounceTrophy {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .achievement-container h2 {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .achievement-container p {
+            font-size: 13px;
+            color: #9ca3af;
+            margin-bottom: 20px;
+        }
+
+        .summary-card {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+        }
+
+        .summary-item span {
+            font-size: 10px;
+            color: #9ca3af;
+            display: block;
+            text-transform: uppercase;
+        }
+
+        .summary-item h4 {
+            font-size: 15px;
+            font-weight: 600;
+            color: #f3f4f6;
+            margin-top: 4px;
+        }
+
+        .completion-tag {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #34d399;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* Phase 4: Brand Outro */
+        .outro-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            text-align: center;
+        }
+
+        .app-logo-large {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #6366f1, #10b981);
+            border-radius: 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 36px;
+            margin-bottom: 16px;
+            box-shadow: 0 0 35px rgba(99, 102, 241, 0.4);
+        }
+
+        .outro-container h1 {
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
+
+        .tagline {
+            font-size: 13px;
+            color: #9ca3af;
+            margin-bottom: 24px;
+            max-width: 280px;
+        }
+
+        .rating-box {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            margin-bottom: 16px;
+        }
+
+        .stars {
+            color: #f59e0b;
+            font-size: 14px;
+        }
+
+        .rating-box span {
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .social-proof {
+            font-size: 11px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+
+        /* External Video Title Overlay */
+        .video-title-overlay {
+            position: absolute;
+            top: 50px;
+            left: 80px;
+            z-index: 20;
+            color: #ffffff;
+        }
+
+        .video-title-overlay h2 {
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            margin-bottom: 6px;
+            background: linear-gradient(135deg, #ffffff, #9ca3af);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .video-title-overlay p {
+            font-size: 16px;
+            color: #6366f1;
+            font-weight: 500;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* Progress Bar Timeline Indicator */
+        .timeline-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            width: 100%;
+            z-index: 30;
+        }
+
+        .timeline-progress {
+            height: 100%;
+            background: linear-gradient(90deg, #6366f1, #10b981);
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="video-container">
+        <!-- Floating Ambient Orbs -->
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+
+        <!-- External Showcase Title -->
+        <div class="video-title-overlay">
+            <h2>InnerPulse Meditation App</h2>
+            <p>Product Experience Showcase</p>
+        </div>
+
+        <!-- Phone Mockup Container -->
+        <div class="phone-frame">
+            <div class="phone-notch"></div>
+            
+            <div class="app-screen">
+                
+                <!-- PHASE 1: Dashboard View (0 - 10s) -->
+                <div class="view-panel active" id="phase-1">
+                    <div class="header-row">
+                        <div class="user-greeting">
+                            <h3>Welcome back</h3>
+                            <h1>Alex Morgan</h1>
+                        </div>
+                        <div class="avatar">AM</div>
+                    </div>
+
+                    <div class="streak-badge">
+                        <div class="streak-icon">🔥</div>
+                        <div class="streak-info">
+                            <h4>Current Streak</h4>
+                            <p>14 Days Mindful</p>
+                        </div>
+                    </div>
+
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <span>Total Time</span>
+                            <h3>420 mins</h3>
+                        </div>
+                        <div class="metric-card">
+                            <span>Calm Score</span>
+                            <h3>94%</h3>
+                        </div>
+                    </div>
+
+                    <div class="recommendation-card">
+                        <span>Today's Focus</span>
+                        <h4>Deep Delta Recovery</h4>
+                        <p>15 min guided audio for ultimate mental reset & recovery.</p>
+                    </div>
+                </div>
+
+                <!-- PHASE 2: Live Activity Mode (10 - 25s) -->
+                <div class="view-panel" id="phase-2">
+                    <div class="live-header">
+                        <h3>Live Session</h3>
+                        <h2>Deep Delta Recovery</h2>
+                    </div>
+
+                    <div class="pulse-ring-container">
+                        <div class="pulse-wave"></div>
+                        <div class="pulse-wave"></div>
+                        <div class="pulse-core">🧘</div>
+                    </div>
+
+                    <div class="timer-display" id="live-timer">04:12</div>
+
+                    <div class="ecg-container">
+                        <span>BIOMETRIC COHERENCE FEED</span>
+                        <svg width="100%" height="45" viewBox="0 0 350 45" fill="none">
+                            <path d="M0 22.5H45L60 8L75 37L90 15L105 30L120 22.5H350" stroke="#34d399" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+
+                    <div class="live-stats">
+                        <div class="live-stat-item">
+                            <span>Heart Rate</span>
+                            <h4 id="hr-stat">62 BPM</h4>
+                        </div>
+                        <div class="live-stat-item">
+                            <span>Brainwave</span>
+                            <h4>Alpha</h4>
+                        </div>
+                        <div class="live-stat-item">
+                            <span>Calm Level</span>
+                            <h4 id="calm-stat">98%</h4>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PHASE 3: Achievement / Completion (25 - 38s) -->
+                <div class="view-panel" id="phase-3">
+                    <div class="achievement-container">
+                        <div class="trophy-badge">🏆</div>
+                        <h2>Session Complete!</h2>
+                        <p>You have successfully unlocked your daily inner tranquility balance.</p>
+
+                        <div class="summary-card">
+                            <div class="summary-item">
+                                <span>Duration</span>
+                                <h4>15m 00s</h4>
+                            </div>
+                            <div class="summary-item">
+                                <span>Avg HR</span>
+                                <h4>58 BPM</h4>
+                            </div>
+                            <div class="summary-item">
+                                <span>Streak</span>
+                                <h4>15 Days</h4>
+                            </div>
+                        </div>
+
+                        <div class="completion-tag">
+                            ✨ Daily Goal Achieved
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PHASE 4: Brand Outro (38 - 45s) -->
+                <div class="view-panel" id="phase-4">
+                    <div class="outro-container">
+                        <div class="app-logo-large">🧘</div>
+                        <h1>InnerPulse</h1>
+                        <p class="tagline">Your personal sanctuary for profound mindfulness and neural calm.</p>
+
+                        <div class="rating-box">
+                            <div class="stars">★★★★★</div>
+                            <span>4.9 / 5.0 App Store</span>
+                        </div>
+
+                        <div class="social-proof">
+                            Trusted by 2M+ Mindful Meditators
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Timeline Progress Bar -->
+        <div class="timeline-bar">
+            <div class="timeline-progress" id="timeline-progress"></div>
+        </div>
+    </div>
+
+    <script>
+        // Timeline & Phase Transition Controller (Total 45 seconds)
+        const phases = document.querySelectorAll('.view-panel');
+        const progressBar = document.getElementById('timeline-progress');
+        
+        let currentPhase = 0;
+        const phaseDurations = [10000, 15000, 13000, 7000]; // Total 45,000ms
+        let startTime = null;
+        const totalDuration = 45000;
+
+        // Switch Phases via CSS Classes
+        function activatePhase(index) {
+            phases.forEach((p, idx) => {
+                if (idx === index) {
+                    p.classList.add('active');
+                } else {
+                    p.classList.remove('active');
+                }
+            });
+        }
+
+        // Run Timed Phase Sequence
+        function runSequence(index) {
+            if (index >= phases.length) return;
+            activatePhase(index);
+            
+            setTimeout(() => {
+                runSequence(index + 1);
+            }, phaseDurations[index]);
+        }
+
+        // Global Timeline Progress Bar Animation & Dynamic Live Counters
+        let secondsElapsed = 252; // Start timer at 04:12 during Phase 2
+        let hrValue = 62;
+        
+        function updateLiveCounters() {
+            // Increment timer during phase 2 (10s to 25s roughly)
+            if (currentPhase === 1) {
+                secondsElapsed++;
+                let mins = Math.floor(secondsElapsed / 60).toString().padStart(2, '0');
+                let secs = (secondsElapsed % 60).toString().padStart(2, '0');
+                const timerEl = document.getElementById('live-timer');
+                if (timerEl) timerEl.innerText = `${mins}:${secs}`;
+
+                // Fluctuate heart rate slightly for realism
+                if (Math.random() > 0.6) {
+                    hrValue += Math.random() > 0.5 ? 1 : -1;
+                    const hrEl = document.getElementById('hr-stat');
+                    if (hrEl) hrEl.innerText = `${hrValue} BPM`;
+                }
+            }
+        }
+
+        setInterval(updateLiveCounters, 1000);
+
+        // Animation Loop for Progress Bar and Phase Tracking
+        function step(timestamp) {
+            if (!startTime) startTime = timestamp;
+            let elapsed = timestamp - startTime;
+            let progress = Math.min((elapsed / totalDuration) * 100, 100);
+            
+            progressBar.style.width = `${progress}%`;
+
+            // Track active phase accurately for background logic
+            if (elapsed < 10000) {
+                currentPhase = 0;
+            } else if (elapsed < 25000) {
+                currentPhase = 1;
+            } else if (elapsed < 38000) {
+                currentPhase = 2;
+            } else {
+                currentPhase = 3;
+            }
+
+            if (elapsed < totalDuration) {
+                requestAnimationFrame(step);
+            }
+        }
+
+        // Initialize Animation Loop
+        window.addEventListener('load', () => {
+            runSequence(0);
+            requestAnimationFrame(step);
+        });
+    </script>
+</body>
+</html>

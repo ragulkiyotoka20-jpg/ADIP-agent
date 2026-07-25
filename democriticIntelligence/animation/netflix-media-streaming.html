@@ -1,0 +1,1389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Netflix Media Streaming - 45s Production Showcase</title>
+    <style>
+        :root {
+            --netflix-red: #E50914;
+            --netflix-dark: #141414;
+            --netflix-black: #000000;
+            --netflix-gray: #808080;
+            --netflix-light-gray: #E5E5E5;
+            --glass-bg: rgba(20, 20, 20, 0.75);
+            --glass-border: rgba(255, 255, 255, 0.12);
+            --glass-shine: rgba(255, 255, 255, 0.05);
+            --card-shadow: 0 30px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(229, 9, 20, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100vh;
+            background-color: var(--netflix-black);
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* 1920x1080 Keynote Container */
+        .keynote-canvas {
+            position: relative;
+            width: 1920px;
+            height: 1080px;
+            background: radial-gradient(circle at 50% 30%, #1f1f1f 0%, #0a0a0a 60%, #000000 100%);
+            overflow: hidden;
+            transform-origin: center;
+            box-shadow: 0 0 100px rgba(0,0,0,0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Ambient Lighting & Background FX */
+        .ambient-glow {
+            position: absolute;
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(229, 9, 20, 0.18) 0%, rgba(0, 0, 0, 0) 70%);
+            top: -200px;
+            right: -100px;
+            z-index: 1;
+            pointer-events: none;
+            animation: pulseGlow 8s ease-in-out infinite alternate;
+        }
+
+        .ambient-glow-2 {
+            position: absolute;
+            width: 900px;
+            height: 900px;
+            background: radial-gradient(circle, rgba(50, 100, 255, 0.08) 0%, rgba(0, 0, 0, 0) 70%);
+            bottom: -300px;
+            left: -200px;
+            z-index: 1;
+            pointer-events: none;
+            animation: pulseGlow 12s ease-in-out infinite alternate-reverse;
+        }
+
+        @keyframes pulseGlow {
+            0% { transform: scale(1) translate(0, 0); opacity: 0.6; }
+            100% { transform: scale(1.2) translate(50px, 30px); opacity: 1; }
+        }
+
+        /* Background Grid Lines */
+        .bg-grid {
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 80px 80px;
+            z-index: 1;
+            transform: perspective(1000px) rotateX(60deg) translateY(-200px) translateZ(-300px);
+            animation: gridScroll 30s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes gridScroll {
+            0% { background-position: 0 0; }
+            100% { background-position: 0 80px; }
+        }
+
+        /* Floating 3D Frosted Glass Spheres */
+        .floating-sphere {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.15), rgba(229, 9, 20, 0.05) 60%, rgba(0, 0, 0, 0.8) 100%);
+            box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.1), 0 20px 40px rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+            z-index: 2;
+            pointer-events: none;
+            animation: floatOrb 10s ease-in-out infinite alternate;
+        }
+
+        .sphere-1 { width: 180px; height: 180px; top: 100px; left: 150px; animation-duration: 9s; }
+        .sphere-2 { width: 120px; height: 120px; bottom: 120px; right: 200px; animation-duration: 11s; animation-delay: -2s; background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.2), rgba(50, 150, 255, 0.08) 60%, rgba(0, 0, 0, 0.8) 100%); }
+        .sphere-3 { width: 80px; height: 80px; top: 250px; right: 350px; animation-duration: 7s; animation-delay: -4s; }
+
+        @keyframes floatOrb {
+            0% { transform: translateY(0px) translateX(0px) rotate(0deg); }
+            100% { transform: translateY(-30px) translateX(20px) rotate(15deg); }
+        }
+
+        /* 3D Isometric Perspective Glass UI Container */
+        .stage-container {
+            position: relative;
+            width: 1600px;
+            height: 900px;
+            z-index: 5;
+            perspective: 1400px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .isometric-viewport {
+            position: relative;
+            width: 1400px;
+            height: 800px;
+            transform-style: preserve-3d;
+            transform: perspective(1400px) rotateY(-12deg) rotateX(6deg);
+            transition: transform 1.2s cubic-bezier(0.15, 0.85, 0.35, 1.0);
+        }
+
+        /* Master Glass Dashboard Frame */
+        .glass-dashboard {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            box-shadow: var(--card-shadow);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transform-style: preserve-3d;
+        }
+
+        .glass-dashboard::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+        }
+
+        /* Top Navigation Header inside Dashboard */
+        .dashboard-header {
+            height: 80px;
+            width: 100%;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            background: rgba(0, 0, 0, 0.3);
+            transform: translateZ(30px);
+        }
+
+        .brand-logo-area {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .netflix-logo-svg {
+            width: 120px;
+            height: 32px;
+            fill: var(--netflix-red);
+        }
+
+        .showcase-badge {
+            background: rgba(229, 9, 20, 0.15);
+            border: 1px solid rgba(229, 9, 20, 0.4);
+            color: #ff4d4f;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .header-nav-items {
+            display: flex;
+            gap: 30px;
+            color: var(--netflix-light-gray);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .header-nav-items span {
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .header-nav-items span.active, .header-nav-items span:hover {
+            color: #ffffff;
+            text-shadow: 0 0 10px rgba(255,255,255,0.5);
+        }
+
+        .header-right-profile {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .live-status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: #4cd137;
+            background: rgba(76, 209, 55, 0.1);
+            padding: 6px 12px;
+            border-radius: 12px;
+            border: 1px solid rgba(76, 209, 55, 0.3);
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #4cd137;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #4cd137;
+            animation: livePulse 1.5s infinite;
+        }
+
+        @keyframes livePulse {
+            0% { transform: scale(0.95); opacity: 0.8; }
+            50% { transform: scale(1.3); opacity: 1; box-shadow: 0 0 14px #4cd137; }
+            100% { transform: scale(0.95); opacity: 0.8; }
+        }
+
+        /* Main Stage Content Area */
+        .dashboard-body {
+            position: relative;
+            flex: 1;
+            padding: 40px;
+            overflow: hidden;
+            transform-style: preserve-3d;
+        }
+
+        /* Scenes Management */
+        .scene {
+            position: absolute;
+            top: 40px; left: 40px; right: 40px; bottom: 40px;
+            display: flex;
+            flex-direction: column;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.8s ease-in-out, transform 0.8s ease-in-out;
+            transform: translateZ(-50px) scale(0.95);
+            pointer-events: none;
+        }
+
+        .scene.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateZ(0px) scale(1);
+            pointer-events: auto;
+        }
+
+        /* ================= SCENE 1: ULTRA HD CINEMATIC ENGINE ================= */
+        .scene-1-grid {
+            display: grid;
+            grid-template-columns: 1.3fr 0.7fr;
+            gap: 40px;
+            height: 100%;
+            transform-style: preserve-3d;
+        }
+
+        .hero-player-box {
+            background: linear-gradient(135deg, rgba(30,30,30,0.8), rgba(10,10,10,0.9));
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+            transform: translateZ(40px);
+            position: relative;
+        }
+
+        .video-simulator {
+            position: relative;
+            flex: 1;
+            background: url('https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=1200&q=80') center/cover no-repeat;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .video-simulator::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(0deg, rgba(0,0,0,0.8) 0%, transparent 50%, rgba(0,0,0,0.4) 100%);
+        }
+
+        .play-center-btn {
+            position: relative;
+            z-index: 3;
+            width: 80px;
+            height: 80px;
+            background: rgba(229, 9, 20, 0.9);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 0 30px rgba(229, 9, 20, 0.6);
+            transition: transform 0.3s, background 0.3s;
+        }
+
+        .play-center-btn:hover {
+            transform: scale(1.1);
+            background: var(--netflix-red);
+        }
+
+        .play-center-btn::after {
+            content: '';
+            position: absolute;
+            width: 0; height: 0;
+            border-top: 15px solid transparent;
+            border-bottom: 15px solid transparent;
+            border-left: 24px solid white;
+            left: 31px;
+        }
+
+        .video-hud-overlay {
+            position: absolute;
+            bottom: 20px; left: 20px; right: 20px;
+            z-index: 3;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .hud-timeline {
+            width: 100%;
+            height: 6px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 3px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hud-timeline-progress {
+            position: absolute;
+            top: 0; left: 0; bottom: 0;
+            width: 45%;
+            background: var(--netflix-red);
+            border-radius: 3px;
+            box-shadow: 0 0 10px var(--netflix-red);
+        }
+
+        .hud-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .codec-tags {
+            display: flex;
+            gap: 8px;
+        }
+
+        .codec-tag {
+            background: rgba(255,255,255,0.15);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .scene-1-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            transform: translateZ(60px);
+        }
+
+        .info-card-3d {
+            background: rgba(25, 25, 25, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .info-card-3d::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 4px; height: 100%;
+            background: var(--netflix-red);
+        }
+
+        .info-card-3d h2 {
+            color: white;
+            font-size: 26px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.2;
+        }
+
+        .info-card-3d p {
+            color: var(--netflix-gray);
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .metric-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .metric-box {
+            background: rgba(0,0,0,0.4);
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .metric-box .label {
+            font-size: 11px;
+            color: var(--netflix-gray);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
+
+        .metric-box .value {
+            font-size: 20px;
+            color: white;
+            font-weight: 700;
+        }
+
+        .metric-box .value span {
+            color: #4cd137;
+            font-size: 13px;
+            font-weight: 500;
+            margin-left: 6px;
+        }
+
+
+        /* ================= SCENE 2: GLOBAL CDN EDGE TOPOLOGY ================= */
+        .scene-2-layout {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            gap: 25px;
+            transform-style: preserve-3d;
+        }
+
+        .scene-2-top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            transform: translateZ(30px);
+        }
+
+        .scene-title h2 {
+            color: white;
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            margin-bottom: 6px;
+        }
+
+        .scene-title p {
+            color: var(--netflix-gray);
+            font-size: 15px;
+        }
+
+        .cdn-stats-pills {
+            display: flex;
+            gap: 15px;
+        }
+
+        .cdn-pill {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 10px 20px;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .cdn-pill .p-label { font-size: 11px; color: var(--netflix-gray); text-transform: uppercase; }
+        .cdn-pill .p-val { font-size: 16px; color: white; font-weight: 700; }
+
+        .cdn-map-container {
+            flex: 1;
+            background: rgba(10, 10, 10, 0.7);
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.08);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transform: translateZ(50px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+        }
+
+        .world-map-svg {
+            width: 85%;
+            height: 85%;
+            opacity: 0.25;
+            fill: #ffffff;
+        }
+
+        /* Interactive Open Connect Nodes */
+        .oc-node {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            transform: translate(-50%, -50%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .oc-node .node-core {
+            width: 10px;
+            height: 10px;
+            background: var(--netflix-red);
+            border-radius: 50%;
+            box-shadow: 0 0 15px var(--netflix-red);
+            z-index: 3;
+        }
+
+        .oc-node .node-ring {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 1px solid var(--netflix-red);
+            border-radius: 50%;
+            animation: nodeWave 2s infinite ease-out;
+        }
+
+        @keyframes nodeWave {
+            0% { transform: scale(0.5); opacity: 1; }
+            100% { transform: scale(2.5); opacity: 0; }
+        }
+
+        .oc-tooltip {
+            position: absolute;
+            bottom: 35px;
+            background: rgba(20, 20, 20, 0.9);
+            border: 1px solid rgba(255,255,255,0.15);
+            padding: 10px 15px;
+            border-radius: 8px;
+            color: white;
+            font-size: 12px;
+            white-space: nowrap;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            pointer-events: none;
+            backdrop-filter: blur(10px);
+            z-index: 10;
+        }
+
+        .node-na { top: 38%; left: 28%; }
+        .node-eu { top: 32%; left: 52%; }
+        .node-ap { top: 48%; left: 76%; }
+        .node-sa { top: 68%; left: 35%; }
+
+        /* Data Traffic Flow Animation Lines */
+        .traffic-line {
+            position: absolute;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--netflix-red), transparent);
+            transform-origin: left center;
+            opacity: 0.6;
+            animation: flowData 3s linear infinite;
+        }
+
+        @keyframes flowData {
+            0% { opacity: 0.1; filter: drop-shadow(0 0 2px var(--netflix-red)); }
+            50% { opacity: 0.9; filter: drop-shadow(0 0 8px var(--netflix-red)); }
+            100% { opacity: 0.1; filter: drop-shadow(0 0 2px var(--netflix-red)); }
+        }
+
+
+        /* ================= SCENE 3: ADAPTIVE BITRATE & AI STREAMS ================= */
+        .scene-3-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            height: 100%;
+            transform-style: preserve-3d;
+        }
+
+        .panel-3d-box {
+            background: rgba(20, 20, 20, 0.65);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            transform: translateZ(40px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .panel-header-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .panel-header-flex h3 {
+            color: white;
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .ai-status-tag {
+            background: rgba(50, 150, 255, 0.15);
+            border: 1px solid rgba(50, 150, 255, 0.4);
+            color: #4da6ff;
+            font-size: 11px;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+
+        /* Bitrate Graph Simulation */
+        .bitrate-graph-area {
+            flex: 1;
+            display: flex;
+            align-items: flex-end;
+            gap: 12px;
+            padding: 20px 0 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            position: relative;
+        }
+
+        .graph-bar-col {
+            flex: 1;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .g-bar {
+            width: 100%;
+            background: linear-gradient(180deg, var(--netflix-red), rgba(229,9,20,0.3));
+            border-radius: 4px 4px 0 0;
+            transition: height 1s cubic-bezier(0.1, 0.8, 0.3, 1);
+            box-shadow: 0 0 15px rgba(229, 9, 20, 0.3);
+        }
+
+        .g-label {
+            font-size: 10px;
+            color: var(--netflix-gray);
+        }
+
+        .bitrate-legend {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            font-size: 13px;
+            color: var(--netflix-light-gray);
+        }
+
+        .encoding-matrix-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .matrix-card {
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.06);
+            padding: 15px;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .matrix-card .m-title { font-size: 12px; color: var(--netflix-gray); }
+        .matrix-card .m-val { font-size: 18px; color: white; font-weight: 700; }
+
+
+        /* ================= SCENE 4: ENTERPRISE SCALE & ANALYTICS ================= */
+        .scene-4-layout {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            justify-content: space-between;
+            transform-style: preserve-3d;
+        }
+
+        .scene-4-header h2 {
+            color: white;
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            transform: translateZ(20px);
+        }
+
+        .scene-4-header p {
+            color: var(--netflix-gray);
+            font-size: 15px;
+            transform: translateZ(20px);
+        }
+
+        .metrics-banner-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            transform: translateZ(50px);
+        }
+
+        .big-metric-card {
+            background: rgba(20, 20, 20, 0.7);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            position: relative;
+        }
+
+        .big-metric-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 25px; right: 25px; height: 2px;
+            background: linear-gradient(90deg, var(--netflix-red), transparent);
+        }
+
+        .big-metric-card .bm-label {
+            font-size: 12px;
+            color: var(--netflix-gray);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .big-metric-card .bm-number {
+            font-size: 36px;
+            color: white;
+            font-weight: 800;
+            letter-spacing: -1px;
+        }
+
+        .big-metric-card .bm-trend {
+            font-size: 12px;
+            color: #4cd137;
+            font-weight: 600;
+        }
+
+        .architecture-flow-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(15,15,15,0.8);
+            border: 1px solid rgba(255,255,255,0.08);
+            padding: 25px 40px;
+            border-radius: 16px;
+            transform: translateZ(40px);
+        }
+
+        .arch-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            text-align: center;
+        }
+
+        .arch-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(229, 9, 20, 0.15);
+            border: 1px solid rgba(229, 9, 20, 0.4);
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--netflix-red);
+            font-weight: 700;
+            font-size: 18px;
+            box-shadow: 0 0 15px rgba(229, 9, 20, 0.2);
+        }
+
+        .arch-step span {
+            color: white;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .arch-arrow {
+            color: var(--netflix-gray);
+            font-size: 20px;
+            font-weight: 300;
+        }
+
+
+        /* Timeline Controller Bar at Bottom of Keynote */
+        .keynote-controller {
+            position: absolute;
+            bottom: 30px;
+            left: 50px;
+            right: 50px;
+            height: 60px;
+            background: rgba(20, 20, 20, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 30px;
+            backdrop-filter: blur(20px);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            padding: 0 30px;
+            justify-content: space-between;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+        }
+
+        .ctrl-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .play-pause-trigger {
+            background: var(--netflix-red);
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(229, 9, 20, 0.5);
+            transition: transform 0.2s;
+        }
+
+        .play-pause-trigger:hover { transform: scale(1.08); }
+
+        .time-display {
+            color: var(--netflix-light-gray);
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .ctrl-center-progress {
+            flex: 1;
+            margin: 0 40px;
+            height: 6px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 3px;
+            position: relative;
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .ctrl-progress-fill {
+            position: absolute;
+            top: 0; left: 0; bottom: 0;
+            width: 0%;
+            background: var(--netflix-red);
+            border-radius: 3px;
+            box-shadow: 0 0 10px var(--netflix-red);
+            transition: width 0.1s linear;
+        }
+
+        .scene-indicators {
+            display: flex;
+            gap: 12px;
+        }
+
+        .scene-dot-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .scene-dot-btn.active, .scene-dot-btn:hover {
+            background: var(--netflix-red);
+            transform: scale(1.3);
+            box-shadow: 0 0 10px var(--netflix-red);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="keynote-canvas" id="keynoteCanvas">
+        <!-- Ambient Background FX -->
+        <div class="ambient-glow"></div>
+        <div class="ambient-glow-2"></div>
+        <div class="bg-grid"></div>
+
+        <!-- Floating 3D Spheres -->
+        <div class="floating-sphere sphere-1"></div>
+        <div class="floating-sphere sphere-2"></div>
+        <div class="floating-sphere sphere-3"></div>
+
+        <!-- 3D Isometric Viewport -->
+        <div class="stage-container">
+            <div class="isometric-viewport" id="isometricViewport">
+                
+                <!-- Master Glass Dashboard Container -->
+                <div class="glass-dashboard">
+                    
+                    <!-- Dashboard Header -->
+                    <div class="dashboard-header">
+                        <div class="brand-logo-area">
+                            <svg class="netflix-logo-svg" viewBox="0 0 111 30" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M105.062 14.28L111 30c-1.75-.25-3.499-.5-5.361-.75l-2.916-7.363-3.999 6.863H87.361V0h5.249v18.06L97.234 0h5.248v19.438l2.58-5.158zM70.976 29.25V0h5.374v29.25h-5.374zm-22.107 0V4.498h-7.624V0h20.62v4.498h-7.622V29.25h-5.374zm-28.73 0l-7.373-19.5v19.5H7.392V0h6.124l7.123 18.875V0h5.373v29.25H20.139z"/>
+                            </svg>
+                            <div class="showcase-badge">Production Showcase</div>
+                        </div>
+                        <div class="header-nav-items">
+                            <span id="nav-item-0" class="active">01. Ultra HD Engine</span>
+                            <span id="nav-item-1">02. Global CDN Edge</span>
+                            <span id="nav-item-2">03. Adaptive AI</span>
+                            <span id="nav-item-3">04. Enterprise Scale</span>
+                        </div>
+                        <div class="header-right-profile">
+                            <div class="live-status-indicator">
+                                <div class="pulse-dot"></div>
+                                <span>4K 60FPS HDR</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Dashboard Body / Scenes Container -->
+                    <div class="dashboard-body">
+
+                        <!-- SCENE 1 (0s - 10s): Ultra HD Cinematic Engine -->
+                        <div class="scene active" id="scene-0">
+                            <div class="scene-1-grid">
+                                <div class="hero-player-box">
+                                    <div class="video-simulator">
+                                        <div class="play-center-btn" id="playBtnTrigger"></div>
+                                        <div class="video-hud-overlay">
+                                            <div class="hud-timeline">
+                                                <div class="hud-timeline-progress"></div>
+                                            </div>
+                                            <div class="hud-row">
+                                                <span>STRANGER THINGS S4 : CHAPTER IX</span>
+                                                <div class="codec-tags">
+                                                    <span class="codec-tag">AV1</span>
+                                                    <span class="codec-tag">HDR10</span>
+                                                    <span class="codec-tag">DOLBY ATMOS</span>
+                                                </div>
+                                                <span>3840 x 2160 @ 60fps</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="scene-1-sidebar">
+                                    <div class="info-card-3d">
+                                        <h2>Ultra HD Playback Engine</h2>
+                                        <p>Engineered for lossless master-quality streaming across 800+ device form factors with hardware-accelerated decoding.</p>
+                                        <div class="metric-grid">
+                                            <div class="metric-box">
+                                                <div class="label">Bitrate Output</div>
+                                                <div class="value">18.4 Mbps <span>+12%</span></div>
+                                            </div>
+                                            <div class="metric-box">
+                                                <div class="label">Rebuffer Rate</div>
+                                                <div class="value">0.001% <span>Optimal</span></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SCENE 2 (10s - 25s): Global CDN Edge Topology -->
+                        <div class="scene" id="scene-1">
+                            <div class="scene-2-layout">
+                                <div class="scene-2-top-bar">
+                                    <div class="scene-title">
+                                        <h2>Netflix Open Connect CDN Topology</h2>
+                                        <p>Over 18,000 custom-built storage appliances embedded directly inside ISP networks globally.</p>
+                                    </div>
+                                    <div class="cdn-stats-pills">
+                                        <div class="cdn-pill">
+                                            <span class="p-label">Total Edge Cache</span>
+                                            <span class="p-val">220 Tbps Peak</span>
+                                        </div>
+                                        <div class="cdn-pill">
+                                            <span class="p-label">ISP Partners</span>
+                                            <span class="p-val">1,450+ Connected</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="cdn-map-container">
+                                    <!-- Simplified World Map SVG Outline -->
+                                    <svg class="world-map-svg" viewBox="0 0 1000 500">
+                                        <path d="M150,120 C180,100 220,110 250,130 C220,160 170,150 150,120 Z M320,180 C360,160 410,180 430,220 C390,260 330,240 320,180 Z M520,100 C580,80 650,100 680,140 C620,190 550,160 520,100 Z M700,200 C780,180 850,220 870,280 C810,330 730,300 700,200 Z M200,320 C260,300 310,340 300,400 C240,430 180,380 200,320 Z"/>
+                                    </svg>
+                                    <!-- Interactive Nodes -->
+                                    <div class="oc-node node-na">
+                                        <div class="node-ring"></div>
+                                        <div class="node-core"></div>
+                                        <div class="oc-tooltip">NA Edge Node : 48 Tbps / 1ms Latency</div>
+                                    </div>
+                                    <div class="oc-node node-eu">
+                                        <div class="node-ring"></div>
+                                        <div class="node-core"></div>
+                                        <div class="oc-tooltip">EU Cache Node : 64 Tbps / 0.8ms Latency</div>
+                                    </div>
+                                    <div class="oc-node node-ap">
+                                        <div class="node-ring"></div>
+                                        <div class="node-core"></div>
+                                        <div class="oc-tooltip">APOC Edge Node : 55 Tbps / 1.2ms Latency</div>
+                                    </div>
+                                    <div class="oc-node node-sa">
+                                        <div class="node-ring"></div>
+                                        <div class="node-core"></div>
+                                        <div class="oc-tooltip">LATAM Node : 28 Tbps / 1.5ms Latency</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SCENE 3 (25s - 38s): Adaptive Bitrate & AI Streams -->
+                        <div class="scene" id="scene-2">
+                            <div class="scene-3-layout">
+                                <div class="panel-3d-box">
+                                    <div class="panel-header-flex">
+                                        <h3>Per-Title & Per-Shot Encoding</h3>
+                                        <div class="ai-status-tag">AI Optimized</div>
+                                    </div>
+                                    <p style="color: var(--netflix-gray); font-size: 14px; line-height: 1.5;">
+                                        Machine learning models analyze complexity frame-by-frame, allocating optimal bits to complex visual textures while conserving bandwidth on smooth segments.
+                                    </p>
+                                    <div class="bitrate-graph-area" id="bitrateGraph">
+                                        <!-- Animated dynamic bars -->
+                                        <div class="graph-bar-col"><div class="g-bar" style="height: 45%;"></div><span class="g-label">01s</span></div>
+                                        <div class="graph-bar-col"><div class="g-bar" style="height: 80%;"></div><span class="g-label">05s</span></div>
+                                        <div class="graph-bar-col"><div class="g-bar" style="height: 30%;"></div><span class="g-label">10s</span></div>
+                                        <div class="graph-bar-col"><div class="g-bar" style="height: 95%;"></div><span class="g-label">15s</span></div>
+                                        <div class="graph-bar-col"><div class="g-bar" style="height: 60%;"></div><span class="g-label">20s</span></div>
+                                        <div class="graph-bar-col"><div class="g-bar" style="height: 75%;"></div><span class="g-label">25s</span></div>
+                                        <div class="graph-bar-col"><div class="g-bar" style="height: 40%;"></div><span class="g-label">30s</span></div>
+                                    </div>
+                                    <div class="bitrate-legend">
+                                        <span>Bandwidth Savings: <strong>~36% reduction</strong></span>
+                                        <span>Visual Quality VMAF: <strong>96.4 / 100</strong></span>
+                                    </div>
+                                </div>
+                                <div class="panel-3d-box">
+                                    <div class="panel-header-flex">
+                                        <h3>Dynamic Codec Switching</h3>
+                                        <div class="ai-status-tag">Real-Time</div>
+                                    </div>
+                                    <p style="color: var(--netflix-gray); font-size: 14px; line-height: 1.5;">
+                                        Seamless fallback and acceleration across hardware decoders depending on client battery status, network jitter, and CPU load.
+                                    </p>
+                                    <div class="encoding-matrix-grid">
+                                        <div class="matrix-card">
+                                            <span class="m-title">Primary Stream</span>
+                                            <span class="m-val">AV1 / VP9</span>
+                                        </div>
+                                        <div class="matrix-card">
+                                            <span class="m-title">Audio Layer</span>
+                                            <span class="m-val">xHE-AAC / Atmos</span>
+                                        </div>
+                                        <div class="matrix-card">
+                                            <span class="m-title">Packet Loss Recovery</span>
+                                            <span class="m-val">Forward Error Corr.</span>
+                                        </div>
+                                        <div class="matrix-card">
+                                            <span class="m-title">Latency Profile</span>
+                                            <span class="m-val">Ultra-Low Buffer</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SCENE 4 (38s - 45s): Enterprise Scale & Analytics -->
+                        <div class="scene" id="scene-3">
+                            <div class="scene-4-layout">
+                                <div class="scene-4-header">
+                                    <h2>Global Scale & Production Analytics</h2>
+                                    <p>Powering over 260 million paid memberships with absolute zero downtime architecture.</p>
+                                </div>
+                                <div class="metrics-banner-grid">
+                                    <div class="big-metric-card">
+                                        <span class="bm-label">Global Memberships</span>
+                                        <span class="bm-number">260M+</span>
+                                        <span class="bm-trend">+14% YoY Growth</span>
+                                    </div>
+                                    <div class="big-metric-card">
+                                        <span class="bm-label">Daily Stream Hours</span>
+                                        <span class="bm-number">500M+</span>
+                                        <span class="bm-trend">Peak Concurrency</span>
+                                    </div>
+                                    <div class="big-metric-card">
+                                        <span class="bm-label">Cloud Availability</span>
+                                        <span class="bm-number">99.999%</span>
+                                        <span class="bm-trend">Multi-Region AWS</span>
+                                    </div>
+                                    <div class="big-metric-card">
+                                        <span class="bm-label">Latency SLA</span>
+                                        <span class="bm-number">&lt; 15ms</span>
+                                        <span class="bm-trend">Edge Optimized</span>
+                                    </div>
+                                </div>
+                                <div class="architecture-flow-row">
+                                    <div class="arch-step">
+                                        <div class="arch-icon">01</div>
+                                        <span>Master Ingest</span>
+                                    </div>
+                                    <div class="arch-arrow">&rarr;</div>
+                                    <div class="arch-step">
+                                        <div class="arch-icon">02</div>
+                                        <span>Cloud Encoding</span>
+                                    </div>
+                                    <div class="arch-arrow">&rarr;</div>
+                                    <div class="arch-step">
+                                        <div class="arch-icon">03</div>
+                                        <span>Open Connect CDN</span>
+                                    </div>
+                                    <div class="arch-arrow">&rarr;</div>
+                                    <div class="arch-step">
+                                        <div class="arch-icon">04</div>
+                                        <span>Client Playback</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Bottom Timeline Controller -->
+        <div class="keynote-controller">
+            <div class="ctrl-left">
+                <button class="play-pause-trigger" id="playPauseBtn">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" id="playIconSvg"><polygon points="5,3 19,12 5,21"/></svg>
+                </button>
+                <div class="time-display" id="timeDisplay">00:00 / 00:45</div>
+            </div>
+            <div class="ctrl-center-progress" id="ctrlProgressBar">
+                <div class="ctrl-progress-fill" id="ctrlProgressFill"></div>
+            </div>
+            <div class="scene-indicators">
+                <button class="scene-dot-btn active" onclick="jumpToScene(0)"></button>
+                <button class="scene-dot-btn" onclick="jumpToScene(1)"></button>
+                <button class="scene-dot-btn" onclick="jumpToScene(2)"></button>
+                <button class="scene-dot-btn" onclick="jumpToScene(3)"></button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // 45-Second Showcase Automation Engine using setTimeout
+        const sceneDurations = [10, 15, 13, 7]; // Total = 45s
+        let currentSceneIndex = 0;
+        let isPlaying = true;
+        let startTime = Date.now();
+        let pausedAt = 0;
+        let totalDuration = 45000;
+        let animationTimer = null;
+        let timeoutHandles = [];
+
+        const scenes = document.querySelectorAll('.scene');
+        const navItems = [
+            document.getElementById('nav-item-0'),
+            document.getElementById('nav-item-1'),
+            document.getElementById('nav-item-2'),
+            document.getElementById('nav-item-3')
+        ];
+        const sceneDots = document.querySelectorAll('.scene-dot-btn');
+        const progressFill = document.getElementById('ctrlProgressFill');
+        const timeDisplay = document.getElementById('timeDisplay');
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const playIconSvg = document.getElementById('playIconSvg');
+        const isometricViewport = document.getElementById('isometricViewport');
+
+        const sceneStartTimes = [0, 10000, 25000, 38000];
+
+        function initShowcase() {
+            clearAllTimeouts();
+            
+            // Schedule scene transitions using setTimeout as requested
+            sceneStartTimes.forEach((timeOffset, index) => {
+                let handle = setTimeout(() => {
+                    activateScene(index);
+                }, timeOffset);
+                timeoutHandles.push(handle);
+            });
+
+            // End of showcase timer
+            let endHandle = setTimeout(() => {
+                if (isPlaying) {
+                    jumpToScene(0);
+                }
+            }, totalDuration);
+            timeoutHandles.push(endHandle);
+
+            startTime = Date.now() - pausedAt;
+            if (isPlaying) {
+                runProgressLoop();
+            }
+        }
+
+        function clearAllTimeouts() {
+            timeoutHandles.forEach(h => clearTimeout(h));
+            timeoutHandles = [];
+            if (animationTimer) cancelAnimationFrame(animationTimer);
+        }
+
+        function activateScene(index) {
+            currentSceneIndex = index;
+            scenes.forEach((sc, i) => {
+                if (i === index) {
+                    sc.classList.add('active');
+                } else {
+                    sc.classList.remove('active');
+                }
+            });
+
+            navItems.forEach((nav, i) => {
+                if (i === index) {
+                    nav.classList.add('active');
+                } else {
+                    nav.classList.remove('active');
+                }
+            });
+
+            sceneDots.forEach((dot, i) => {
+                if (i === index) {
+                    dot.classList.add('active');
+                } else {
+                    dot.classList.remove('active');
+                }
+            });
+
+            // Subtle dynamic rotation shift on scene change
+            if (index === 0) isometricViewport.style.transform = 'perspective(1400px) rotateY(-12deg) rotateX(6deg)';
+            if (index === 1) isometricViewport.style.transform = 'perspective(1400px) rotateY(-8deg) rotateX(4deg)';
+            if (index === 2) isometricViewport.style.transform = 'perspective(1400px) rotateY(-15deg) rotateX(8deg)';
+            if (index === 3) isometricViewport.style.transform = 'perspective(1400px) rotateY(-10deg) rotateX(5deg)';
+        }
+
+        function jumpToScene(index) {
+            pausedAt = sceneStartTimes[index];
+            activateScene(index);
+            initShowcase();
+        }
+
+        function runProgressLoop() {
+            if (!isPlaying) return;
+
+            let elapsed = Date.now() - startTime;
+            if (elapsed >= totalDuration) {
+                elapsed = totalDuration;
+            }
+
+            let pct = (elapsed / totalDuration) * 100;
+            progressFill.style.width = pct + '%';
+
+            let currentSecs = Math.floor(elapsed / 1000);
+            let mins = String(Math.floor(currentSecs / 60)).padStart(2, '0');
+            let secs = String(currentSecs % 60).padStart(2, '0');
+            timeDisplay.textContent = `${mins}:${secs} / 00:45`;
+
+            if (elapsed < totalDuration && isPlaying) {
+                animationTimer = requestAnimationFrame(runProgressLoop);
+            }
+        }
+
+        // Play / Pause Control
+        playPauseBtn.addEventListener('click', () => {
+            isPlaying = !isPlaying;
+            if (isPlaying) {
+                playIconSvg.innerHTML = '<polygon points="5,3 19,12 5,21"/>';
+                startTime = Date.now() - pausedAt;
+                initShowcase();
+            } else {
+                playIconSvg.innerHTML = '<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>';
+                pausedAt = Date.now() - startTime;
+                clearAllTimeouts();
+                cancelAnimationFrame(animationTimer);
+            }
+        });
+
+        // Clickable Progress Bar for scrubbing
+        document.getElementById('ctrlProgressBar').addEventListener('click', (e) => {
+            let rect = e.currentTarget.getBoundingClientRect();
+            let clickX = e.clientX - rect.left;
+            let ratio = clickX / rect.width;
+            let targetTime = ratio * totalDuration;
+            
+            pausedAt = targetTime;
+            
+            // Determine active scene based on target time
+            let targetScene = 0;
+            for (let i = sceneStartTimes.length - 1; i >= 0; i--) {
+                if (targetTime >= sceneStartTimes[i]) {
+                    targetScene = i;
+                    break;
+                }
+            }
+            
+            activateScene(targetScene);
+            if (isPlaying) {
+                initShowcase();
+            } else {
+                let currentSecs = Math.floor(targetTime / 1000);
+                let mins = String(Math.floor(currentSecs / 60)).padStart(2, '0');
+                let secs = String(currentSecs % 60).padStart(2, '0');
+                timeDisplay.textContent = `${mins}:${secs} / 00:45`;
+                progressFill.style.width = (targetTime / totalDuration * 100) + '%';
+            }
+        });
+
+        // Auto-fit Keynote Canvas to window with responsive scale
+        function resizeCanvas() {
+            const canvas = document.getElementById('keynoteCanvas');
+            let wW = window.innerWidth;
+            let wH = window.innerHeight;
+            let scaleX = wW / 1920;
+            let scaleY = wH / 1080;
+            let scale = Math.min(scaleX, scaleY);
+            canvas.style.transform = `scale(${scale})`;
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // Initialize on load
+        initShowcase();
+    </script>
+</body>
+</html>
