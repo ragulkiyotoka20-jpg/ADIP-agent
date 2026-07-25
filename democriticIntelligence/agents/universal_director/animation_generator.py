@@ -76,29 +76,27 @@ class AnimationGenerator:
     def _ask_gemini_for_html(self, topic: str) -> str:
         """Send the main prompt to Web Gemini via Chromium browser."""
         
-        prompt = f"""You are a legendary Creative Director and Principal Motion Engineer for Apple, Stripe, SpaceX, and Netflix product launches.
+        prompt = f"""You are a world-renowned Motion Design Director & Lead UI Architect for Apple Keynotes, Stripe Product Launches, SpaceX Flight Terminals, and Netflix Experiences.
 
-I want you to write a MASSIVE, COMPREHENSIVE, BESPOKE STANDALONE HTML FILE (with complete embedded CSS and JavaScript) for a 45-second cinematic product showcase video about "{topic}".
+I want you to write a MASSIVE, COMPREHENSIVE, BESPOKE STANDALONE HTML FILE (with embedded CSS and JavaScript) for a 45-second cinematic product showcase video about "{topic}".
 
-CRITICAL DIRECTION: DO NOT MAKE A GENERIC APP OR DEFAULT DASHBOARD! 
-Reinvent the ENTIRE visual concept, screen flow, UI mechanics, color identity, and animations specifically for "{topic}".
-
-EXAMPLES OF TOPIC-SPECIFIC ANIMATION DIRECTIONS (DRAW INSPIRATION FROM THESE):
-- If topic is "Netflix / Media Streaming": Create profile selection cards ("Who's watching?"), a cinematic movie hero backdrop, video player controls with glowing scrubbers, and category carousels.
-- If topic is "Apple / Siri / Hardware": Create Dynamic Island morphing, Siri glowing particle waveform sphere, 3D camera module zoom, and titanium frame reflections.
-- If topic is "Logistics / Drone / Delivery": Create an interactive 3D map route tracing, drone flying SVG animation, package box morphing, and doorstep delivery notification toast.
-- If topic is "Fintech / Cyberpunk Crypto": Create a futuristic dark trading terminal with dynamic candlestick charting, order book tickers, 3D hologram cards, and yield rings.
-- If topic is "Space / Aerospace": Create a mission control GO/NO-GO poll checklist, trajectory telemetry canvas, stage separation animation, and landing pad alignment.
-
-REQUIRED SPECIFICATIONS:
-1. Canvas Viewport: 1920x1080 resolution (16:9 widescreen 4K keynote display).
-2. Deep ambient dark background with glowing mesh gradient orbs, animated ambient particle fields, or 3D glass floaters.
-3. 3D Glassmorphism & Depth: 3D perspective transforms (`transform: perspective(1400px) rotateY(-12deg) rotateX(6deg)`), floating 3D glass bubbles with glossy reflections, pop-out 3D cards in Z-space, backdrop-filter blur effects.
-4. Scene Timeline (45 Seconds Total):
-   - Build 3 to 5 distinct animated scenes with smooth CSS transitions (`.scene` or `.view-panel` with `.active`).
-   - Use clean JavaScript `setTimeout()` to auto-advance through scenes automatically.
-   - Use `requestAnimationFrame` or `setInterval` for smooth live counters, SVG path tracing, or particle updates.
-5. Rich Embedded Code: Write extensive, highly-polished CSS and JS directly inside `<style>` and `<script>` tags. Make it look like a multi-thousand dollar production product launch!
+CRITICAL DESIGN & FORM-FACTOR DIRECTIVES (STRICT RULES):
+1. NO GENERIC LAPTOP / COMPUTER SCREEN CONTAINERS FOR EVERYTHING:
+   - If "{topic}" is a Mobile App (fitness, ride booking, food delivery, social, messaging, crypto wallet): Render a sleek 3D Smartphone frame (rounded bezels, Dynamic Island, status bar, floating 3D glass cards).
+   - If "{topic}" is Aerospace / Pilot / Aviation / Sci-Fi / Space: Render a Full-Bleed 1920x1080 3D Cockpit HUD canvas with artificial horizon meters, altitude gauges, vector flight paths, and glowing telemetry panels.
+   - If "{topic}" is Media / Streaming / Cinema: Render a Full-Bleed 4K Cinematic TV Hero Backdrop with floating glass playback controls and animated content carousels.
+   - If "{topic}" is Desktop Software / Coding / Analytics: Render a sleek dark macOS/Web app window with sidebar navigation, live metrics, and glowing canvas charts.
+2. NO SPINNERS OR "LOADING..." SCREENS:
+   - Scene 1 MUST render INSTANTLY at 0 seconds with complete, rich, vibrant pre-populated UI elements, hero images/SVG icons, and live dynamic counters.
+   - DO NOT show empty loading screens, spinners, or placeholder progress bars at startup.
+3. SCENE TIMELINE (45 SECONDS AUTO-ADVANCING):
+   - Create 4 distinct animated scenes using CSS `.scene` or `.view-panel` classes with `.active`.
+   - Auto-advance through scenes automatically using clean JavaScript `setTimeout()` at 0s, 10s, 24s, and 36s.
+   - Use `requestAnimationFrame` or `setInterval` for smooth 60fps telemetry paths, floating particle fields, or live chart updates.
+4. VISUAL EXCELLENCE:
+   - 1920x1080 resolution (16:9 widescreen 4K viewport).
+   - Bespoke color palette matching "{topic}" (e.g., Deep Navy & Gold for Aviation, Cyber Neon Cyan & Violet for Tech, Crimson & Charcoal for Sports, Emerald & Dark Glass for Health).
+   - Use smooth CSS keyframe animations, backdrop-filter blur, 3D glassmorphism, pop-out cards, and glowing light trails.
 
 Return ONLY the complete raw HTML code starting with <!DOCTYPE html>. Do NOT output markdown backticks or explanations."""
         
@@ -112,14 +110,15 @@ Return ONLY the complete raw HTML code starting with <!DOCTYPE html>. Do NOT out
     def _retry_html(self, topic: str) -> str:
         """Retry with an explicit high-impact prompt."""
         
-        prompt = f"""Write a comprehensive, 1000+ line single self-contained HTML file (with embedded CSS and JS) for a 45-second production video showcase for "{topic}".
+        prompt = f"""Write a comprehensive 1000+ line single self-contained HTML file (with embedded CSS and JS) for a 45-second product launch video for "{topic}".
 
-Requirements:
-- 1920x1080 widescreen 4K keynote canvas
-- Deep dark backdrop with 3D isometric perspective glass UI container (transform: perspective(1400px) rotateY(-12deg) rotateX(6deg))
-- Floating 3D frosted glass spheres, pop-out feature cards in Z-space, ambient glowing light arcs
-- 4 auto-playing scenes in JavaScript using setTimeout (0s, 10s, 25s, 38s)
-- ALL content, typography, colors, animations custom tailored for {topic} (e.g. video player for media, maps/drones for delivery, Dynamic Island/camera for mobile hardware, trading terminal for fintech)
+STRICT SPECIFICATIONS:
+- 1920x1080 resolution (16:9 widescreen)
+- DO NOT wrap in a generic computer mockup or show any "Loading..." spinners!
+- Render a bespoke UI structure tailored specifically for {topic} (Mobile phone frame for mobile apps; Full-bleed 3D HUD canvas for aviation/space; Dark glass desktop window for software; Cinema hero view for streaming).
+- Scene 1 MUST load INSTANTLY at 0s with pre-filled UI metrics, glowing charts, SVG icons, and live animations.
+- Auto-play 4 scenes using JavaScript `setTimeout` (0s, 10s, 24s, 36s).
+- Deep dark backdrop with animated ambient particles and 3D glass cards.
 
 Return ONLY the HTML code starting with <!DOCTYPE html>."""
         
