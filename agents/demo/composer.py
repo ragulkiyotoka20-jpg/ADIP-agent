@@ -1,5 +1,6 @@
 import os
 import subprocess
+# pyrefly: ignore [missing-import]
 from playwright.sync_api import sync_playwright
 
 class VideoComposer:
@@ -12,21 +13,36 @@ class VideoComposer:
         
         print(f"Recording raw video to {raw_output}...")
         
-        # Find the largest .webm file in exploration_output/videos
-        import glob
-        import shutil
-        
-        video_dir = os.path.abspath(os.path.join("exploration_output", "videos"))
-        webm_files = glob.glob(os.path.join(video_dir, "*.webm"))
-        
-        if webm_files:
-            # Sort by size to get the longest video
-            largest_video = max(webm_files, key=os.path.getsize)
-            print(f"Using actual Explorer crawl video: {os.path.basename(largest_video)}")
-            shutil.copy2(largest_video, raw_output)
+        # Record the dynamic HTML animation using Playwright
+        html_path = os.path.abspath(os.path.join("animation", "dynamic_demo.html"))
+        if not os.path.exists(html_path):
+            print("Dynamic HTML not found! Falling back to empty video.")
+            subprocess.run(["ffmpeg", "-y", "-f", "lavfi", "-i", "color=c=black:s=1920x1080:d=45", raw_output], check=True)
         else:
-            print("No Explorer videos found! Falling back to empty video.")
-            subprocess.run(["ffmpeg", "-f", "lavfi", "-i", "color=c=black:s=1920x1080:d=45", raw_output], check=True)
+            file_url = f"file:///{html_path.replace(chr(92), '/')}"
+            with sync_playwright() as p:
+                browser = p.chromium.launch(headless=True)
+                context = browser.new_context(
+                    record_video_dir=".",
+                    record_video_size={"width": 1920, "height": 1080},
+                    viewport={"width": 1920, "height": 1080}
+                )
+                page = context.new_page()
+                
+                print(f"Opening dynamic demo: {file_url}")
+                page.goto(file_url)
+                
+                # Wait for the full 45-second animation to finish + 1 second padding
+                print("Recording 45-second dynamic HTML animation... Please wait.")
+                page.wait_for_timeout(46000)
+                
+                video = page.video
+                video_path = video.path()
+                browser.close()
+                
+                if os.path.exists(raw_output):
+                    os.remove(raw_output)
+                os.rename(video_path, raw_output)
         
         # Merge Video, Audio, and Burn Subtitles using high-quality FFmpeg flags
         print(f"Merging AI voiceover {voice_track} and burning subtitles {captions_file}...")
