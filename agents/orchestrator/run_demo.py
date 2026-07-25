@@ -46,8 +46,8 @@ async def main():
     print(f"  * Knowledge Graph Pages        : {context.get('knowledge_graph', {}).get('pages_count', 0)}")
     print(f"  * Documentation Generated      : {bool(context.get('documentation'))}")
     print(f"  * QA Tests Executed            : {context.get('qa', {}).get('total_test_cases', 0)} (Passed: {context.get('qa', {}).get('passed', 0)})")
-    print(f"  * Demo Video Title             : {context.get('demo', {}).get('title', 'N/A')}")
-    print(f"  * Release Risk Score           : {context.get('release', {}).get('risk_assessment', {}).get('risk_score', 'N/A')}")
+    print(f"  * Demo Video Title             : {(context.get('demo') or {}).get('title', 'N/A')}")
+    print(f"  * Release Risk Score           : {(context.get('release') or {}).get('risk_assessment', {}).get('risk_score', 'N/A')}")
     print("=" * 70)
 
 
