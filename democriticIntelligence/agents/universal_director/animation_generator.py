@@ -28,7 +28,7 @@ class AnimationGenerator:
             os.path.join(os.path.dirname(__file__), "..", "..", "animation")
         )
     
-    def generate(self, topic: str) -> dict:
+    def generate(self, topic: str, research_brief: str = None) -> dict:
         """Ask Web Gemini to create the complete animation for the given topic.
         
         Returns dict with:
@@ -43,11 +43,11 @@ class AnimationGenerator:
         print(f"[AnimationGenerator] Opening Chromium → gemini.google.com")
         print(f"[AnimationGenerator] Asking Gemini to CREATE complete '{topic}' animation...")
         
-        html_code = self._ask_gemini_for_html(topic)
+        html_code = self._ask_gemini_for_html(topic, research_brief)
         
         if not html_code or len(html_code) < 200:
             print("[AnimationGenerator] First attempt too short. Retrying with simpler prompt...")
-            html_code = self._retry_html(topic)
+            html_code = self._retry_html(topic, research_brief)
         
         if not html_code or len(html_code) < 200:
             print("[AnimationGenerator] Retry also failed. Using Gemini for minimal generation...")
@@ -73,15 +73,18 @@ class AnimationGenerator:
             "html_code": html_code
         }
     
-    def _ask_gemini_for_html(self, topic: str) -> str:
+    def _ask_gemini_for_html(self, topic: str, research_brief: str = None) -> str:
         """Send the main prompt to Web Gemini via Chromium browser."""
+        
+        brief_context = f"\nRESEARCH BRIEF & SPECIFICATION FOR '{topic}':\n{research_brief}\n" if research_brief else ""
         
         prompt = f"""You are a world-renowned Motion Design Director & Lead UI Architect for Apple Keynotes, Stripe Product Launches, SpaceX Flight Terminals, and Netflix Experiences.
 
-I want you to write a MASSIVE, COMPREHENSIVE, BESPOKE STANDALONE HTML FILE (with embedded CSS and JavaScript) for a 45-second cinematic product showcase video about "{topic}".
-
+I want you to write a MASSIVE, COMPREHENSIVE, BESPOKE STANDALONE HTML FILE (with complete embedded CSS and JavaScript) for a 45-second cinematic product showcase video about "{topic}".
+{brief_context}
 CRITICAL DESIGN & FORM-FACTOR DIRECTIVES (STRICT RULES):
-1. NO GENERIC LAPTOP / COMPUTER SCREEN CONTAINERS FOR EVERYTHING:
+1. BUILD EXACT REAL-WORLD PRODUCT WORKFLOW & BRANDING:
+   - Use authentic product terminology, real feature screens, official brand color hex codes, and actual UI metrics from the research brief.
    - If "{topic}" is a Mobile App (fitness, ride booking, food delivery, social, messaging, crypto wallet): Render a sleek 3D Smartphone frame (rounded bezels, Dynamic Island, status bar, floating 3D glass cards).
    - If "{topic}" is Aerospace / Pilot / Aviation / Sci-Fi / Space: Render a Full-Bleed 1920x1080 3D Cockpit HUD canvas with artificial horizon meters, altitude gauges, vector flight paths, and glowing telemetry panels.
    - If "{topic}" is Media / Streaming / Cinema: Render a Full-Bleed 4K Cinematic TV Hero Backdrop with floating glass playback controls and animated content carousels.
@@ -95,7 +98,7 @@ CRITICAL DESIGN & FORM-FACTOR DIRECTIVES (STRICT RULES):
    - Use `requestAnimationFrame` or `setInterval` for smooth 60fps telemetry paths, floating particle fields, or live chart updates.
 4. VISUAL EXCELLENCE:
    - 1920x1080 resolution (16:9 widescreen 4K viewport).
-   - Bespoke color palette matching "{topic}" (e.g., Deep Navy & Gold for Aviation, Cyber Neon Cyan & Violet for Tech, Crimson & Charcoal for Sports, Emerald & Dark Glass for Health).
+   - Bespoke color palette matching "{topic}".
    - Use smooth CSS keyframe animations, backdrop-filter blur, 3D glassmorphism, pop-out cards, and glowing light trails.
 
 Return ONLY the complete raw HTML code starting with <!DOCTYPE html>. Do NOT output markdown backticks or explanations."""
