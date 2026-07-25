@@ -210,31 +210,39 @@ Format each answer on its own line, numbered 1-10. No extra text."""
     
     def _extract_html(self, response: str) -> str:
         """Extract clean HTML from Gemini's response."""
-        
-        # Try to find HTML in code fences (with or without DOCTYPE)
-        html_match = re.search(r'```(?:html)?\s*(<(?:!DOCTYPE|html)[\s\S]*?</html>)\s*```', response, re.IGNORECASE)
-        if html_match:
-            return html_match.group(1).strip()
-        
-        # Generic code fence matching
-        code_fence_match = re.search(r'```(?:html)?\s*(<[\s\S]*?>[\s\S]*?)\s*```', response, re.IGNORECASE)
-        if code_fence_match:
-            content = code_fence_match.group(1).strip()
-            if '</html>' in content.lower() or '<style' in content.lower() or '<div' in content.lower():
-                if not content.lower().startswith('<!doctype'):
-                    content = '<!DOCTYPE html>\n' + content
-                return content
-        
-        # Try to find raw HTML (no code fences)
-        html_match = re.search(r'((?:<!DOCTYPE|html)[\s\S]*?</html>)', response, re.IGNORECASE)
-        if html_match:
-            return html_match.group(1).strip()
-        
-        # Fallback for raw HTML response
-        stripped = response.strip()
-        if stripped.lower().startswith('<!doctype') or stripped.lower().startswith('<html'):
-            return stripped
-        
+        if not response:
+            return ""
+            
+        # 1. Extract content from Markdown code blocks ```html ... ``` or ``` ... ```
+        code_blocks = re.findall(r'```(?:html|xml|xml-html)?\s*([\s\S]*?)\s*```', response, re.IGNORECASE)
+        for block in code_blocks:
+            block_clean = block.strip()
+            if '<style' in block_clean.lower() or '<script' in block_clean.lower() or '<div' in block_clean.lower() or '<html' in block_clean.lower():
+                if not block_clean.lower().startswith('<!doctype'):
+                    block_clean = '<!DOCTYPE html>\n' + block_clean
+                return block_clean
+
+        # 2. Extract from first <!DOCTYPE or <html tag to </html>
+        start_idx = -1
+        for tag in ['<!doctype html', '<html']:
+            idx = response.lower().find(tag)
+            if idx != -1 and (start_idx == -1 or idx < start_idx):
+                start_idx = idx
+                
+        if start_idx != -1:
+            end_idx = response.lower().rfind('</html>')
+            if end_idx != -1:
+                html_snippet = response[start_idx:end_idx + 7].strip()
+                if not html_snippet.lower().startswith('<!doctype'):
+                    html_snippet = '<!DOCTYPE html>\n' + html_snippet
+                return html_snippet
+            else:
+                # If </html> is missing, take everything from start_idx
+                html_snippet = response[start_idx:].strip()
+                if not html_snippet.lower().startswith('<!doctype'):
+                    html_snippet = '<!DOCTYPE html>\n' + html_snippet
+                return html_snippet + '\n</html>'
+
         return ""
     
     def _extract_app_name(self, html: str, topic: str) -> str:
