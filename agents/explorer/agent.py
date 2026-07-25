@@ -191,8 +191,14 @@ class ExplorerAgent:
 async def main():
     """CLI entrypoint for executing Explorer Agent directly."""
     import sys
-    url = sys.argv[1] if len(sys.argv) > 1 else "http://localhost:8000"
-    config = ExplorerConfig(target_url=url, headless=True, max_actions=10)
+    url = sys.argv[1] if len(sys.argv) > 1 and not sys.argv[1].startswith("--") else "https://www.wikipedia.org"
+    headless = True
+    for arg in sys.argv:
+        if arg.lower() in ("--headful", "--headless=false"):
+            headless = False
+        elif arg.lower() == "--headless=true":
+            headless = True
+    config = ExplorerConfig(target_url=url, headless=headless, max_actions=15)
     agent = ExplorerAgent(config)
     await agent.explore()
 

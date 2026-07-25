@@ -2,6 +2,7 @@
 
 import asyncio
 from typing import Optional, Dict, Any, List
+# pyrefly: ignore [missing-import]
 from playwright.async_api import async_playwright, Playwright, Browser, BrowserContext, Page
 from agents.explorer.config import ExplorerConfig
 from agents.explorer.exceptions import BrowserControllerError
@@ -31,15 +32,22 @@ class BrowserController:
             if not browser_type:
                 raise BrowserControllerError(f"Unsupported browser type: {self.config.browser_type}")
 
+            slow_mo_ms = 1000 if not self.config.headless else 0
             self._browser = await browser_type.launch(
                 headless=self.config.headless,
+                slow_mo=slow_mo_ms,
                 args=["--no-sandbox", "--disable-setuid-sandbox"]
             )
+
+            video_dir = (self.config.get_output_dir() / "videos") if self.config.save_screenshots else None
+            if video_dir:
+                video_dir.mkdir(parents=True, exist_ok=True)
 
             self._context = await self._browser.new_context(
                 viewport={"width": self.config.viewport_width, "height": self.config.viewport_height},
                 user_agent="ADIP-ExplorerAgent/1.0",
                 ignore_https_errors=True,
+                record_video_dir=str(video_dir) if video_dir else None,
             )
 
             self._context.set_default_timeout(self.config.action_timeout_ms)
