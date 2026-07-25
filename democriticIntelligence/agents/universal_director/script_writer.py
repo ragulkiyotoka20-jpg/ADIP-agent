@@ -22,37 +22,25 @@ class ScriptWriter:
     def __init__(self):
         self.llm = GeminiWebLLM()
     
-    def write(self, topic: str, app_name: str, html_code: str = None) -> str:
+    def write(self, topic: str, app_name: str, research_brief: str = None) -> str:
         """Ask Web Gemini to write a voiceover narration for the generated animation."""
         
-        # If we have the HTML, include a summary so Gemini knows what's on screen
-        html_context = ""
-        if html_code and len(html_code) > 100:
-            # Extract visible text from HTML to give Gemini context
-            import re
-            # Remove style and script tags
-            text = re.sub(r'<style[\s\S]*?</style>', '', html_code)
-            text = re.sub(r'<script[\s\S]*?</script>', '', text)
-            # Remove HTML tags
-            text = re.sub(r'<[^>]+>', ' ', text)
-            # Clean whitespace
-            text = re.sub(r'\s+', ' ', text).strip()
-            if len(text) > 50:
-                html_context = f"\n\nThe app UI shows this visible text content:\n{text[:500]}"
+        brief_context = f"\nREAL-WORLD PRODUCT & DESIGN BRIEF:\n{research_brief}\n" if research_brief else ""
         
-        prompt = f"""You are a world-class voiceover narrator for Apple/Stripe-level product launches.
+        prompt = f"""You are a world-class keynote narrator for Apple, Stripe, and SpaceX product launch videos.
 
-Write a 45-second high-energy voiceover narration script (approximately 130-140 words total) for a product demo video of "{app_name}", an app/product about "{topic}".
-{html_context}
-
-NARRATION INSTRUCTIONS:
-- Write EXACTLY 130 to 140 words total.
-- Match the visual story, features, and UI elements presented in the HTML text above.
-- Make it sound energetic, inspiring, and high-converting.
+Write a 30-second high-energy voiceover narration script (approximately 95 to 110 words total) for a product showcase video of "{app_name}", an app/product about "{topic}".
+{brief_context}
+CRITICAL NARRATION INSTRUCTIONS:
+- Write EXACTLY 4 short, impactful sentences / paragraphs matching the 4 visual scenes:
+  1. Scene 1 (Opening Reveal): Introduce {app_name} and the core problem it solves.
+  2. Scene 2 (Live Feature): Highlight the primary real-world workflow or live activity feature from the research brief.
+  3. Scene 3 (Metrics & Performance): Highlight key stats, scores, badges, and user rewards.
+  4. Scene 4 (Call to Action & Outro): Dynamic closing statement driving users to get started.
+- Word Count: EXACTLY 95 to 110 words total (natural, clear, inspiring speaking pace).
 - Mention "{app_name}" at least twice.
-- Flow smoothly from the opening reveal to the mid-session features and closing call to action.
 
-Return ONLY plain voiceover text. No scene markers, no brackets, no quotes."""
+Return ONLY the clean narration text. No scene headings, no quotes, no stage directions."""
         
         print(f"[ScriptWriter] Opening Chromium → gemini.google.com")
         print(f"[ScriptWriter] Asking Gemini to write narration for '{app_name}'...")

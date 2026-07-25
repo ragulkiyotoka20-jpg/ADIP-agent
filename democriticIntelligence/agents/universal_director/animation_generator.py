@@ -28,7 +28,7 @@ class AnimationGenerator:
             os.path.join(os.path.dirname(__file__), "..", "..", "animation")
         )
     
-    def generate(self, topic: str, research_brief: str = None) -> dict:
+    def generate(self, topic: str, research_brief: str = None, audio_duration: float = 30.0) -> dict:
         """Ask Web Gemini to create the complete animation for the given topic.
         
         Returns dict with:
@@ -41,13 +41,13 @@ class AnimationGenerator:
         
         # ── Step 1: Ask Gemini to generate the FULL HTML (with embedded CSS + JS) ──
         print(f"[AnimationGenerator] Opening Chromium → gemini.google.com")
-        print(f"[AnimationGenerator] Asking Gemini to CREATE complete '{topic}' animation...")
+        print(f"[AnimationGenerator] Asking Gemini to CREATE complete '{topic}' animation (Duration: {audio_duration:.1f}s)...")
         
-        html_code = self._ask_gemini_for_html(topic, research_brief)
+        html_code = self._ask_gemini_for_html(topic, research_brief, audio_duration)
         
         if not html_code or len(html_code) < 200:
             print("[AnimationGenerator] First attempt too short. Retrying with simpler prompt...")
-            html_code = self._retry_html(topic, research_brief)
+            html_code = self._retry_html(topic, research_brief, audio_duration)
         
         if not html_code or len(html_code) < 200:
             print("[AnimationGenerator] Retry also failed. Using Gemini for minimal generation...")
@@ -73,33 +73,40 @@ class AnimationGenerator:
             "html_code": html_code
         }
     
-    def _ask_gemini_for_html(self, topic: str, research_brief: str = None) -> str:
+    def _ask_gemini_for_html(self, topic: str, research_brief: str = None, audio_duration: float = 30.0) -> str:
         """Send the main prompt to Web Gemini via Chromium browser."""
         
         brief_context = f"\nRESEARCH BRIEF & SPECIFICATION FOR '{topic}':\n{research_brief}\n" if research_brief else ""
         
+        step_interval = round(audio_duration / 4.0, 1)
+        t0 = 0.0
+        t1 = round(step_interval, 1)
+        t2 = round(step_interval * 2, 1)
+        t3 = round(step_interval * 3, 1)
+        
         prompt = f"""You are a world-renowned Motion Design Director & Lead UI Architect for Apple Keynotes, Stripe Product Launches, SpaceX Flight Terminals, and Netflix Experiences.
 
-I want you to write a MASSIVE, COMPREHENSIVE, BESPOKE STANDALONE HTML FILE (with complete embedded CSS and JavaScript) for a 45-second cinematic product showcase video about "{topic}".
+I want you to write a MASSIVE, COMPREHENSIVE, BESPOKE STANDALONE HTML FILE (with complete embedded CSS and JavaScript) for a {audio_duration:.1f}-second cinematic product showcase video about "{topic}".
 {brief_context}
-CRITICAL DESIGN & FORM-FACTOR DIRECTIVES (STRICT RULES):
-1. BUILD EXACT REAL-WORLD PRODUCT WORKFLOW & BRANDING:
-   - Use authentic product terminology, real feature screens, official brand color hex codes, and actual UI metrics from the research brief.
-   - If "{topic}" is a Mobile App (fitness, ride booking, food delivery, social, messaging, crypto wallet): Render a sleek 3D Smartphone frame (rounded bezels, Dynamic Island, status bar, floating 3D glass cards).
-   - If "{topic}" is Aerospace / Pilot / Aviation / Sci-Fi / Space: Render a Full-Bleed 1920x1080 3D Cockpit HUD canvas with artificial horizon meters, altitude gauges, vector flight paths, and glowing telemetry panels.
-   - If "{topic}" is Media / Streaming / Cinema: Render a Full-Bleed 4K Cinematic TV Hero Backdrop with floating glass playback controls and animated content carousels.
-   - If "{topic}" is Desktop Software / Coding / Analytics: Render a sleek dark macOS/Web app window with sidebar navigation, live metrics, and glowing canvas charts.
-2. NO SPINNERS OR "LOADING..." SCREENS:
-   - Scene 1 MUST render INSTANTLY at 0 seconds with complete, rich, vibrant pre-populated UI elements, hero images/SVG icons, and live dynamic counters.
-   - DO NOT show empty loading screens, spinners, or placeholder progress bars at startup.
-3. SCENE TIMELINE (45 SECONDS AUTO-ADVANCING):
-   - Create 4 distinct animated scenes using CSS `.scene` or `.view-panel` classes with `.active`.
-   - Auto-advance through scenes automatically using clean JavaScript `setTimeout()` at 0s, 10s, 24s, and 36s.
-   - Use `requestAnimationFrame` or `setInterval` for smooth 60fps telemetry paths, floating particle fields, or live chart updates.
+CRITICAL DURATION & MOTION DIRECTIVES (STRICT RULES):
+1. EXACT DURATION & SCENE TIMINGS ({audio_duration:.1f} SECONDS TOTAL):
+   - The total video duration is EXACTLY {audio_duration:.1f} seconds.
+   - Build 4 distinct animated scenes using CSS `.scene` or `.view-panel` classes with `.active`.
+   - Auto-advance through scenes automatically using clean JavaScript `setTimeout()` at EXACTLY:
+     - Scene 1: {t0}s (0 ms)
+     - Scene 2: {t1}s ({int(t1*1000)} ms)
+     - Scene 3: {t2}s ({int(t2*1000)} ms)
+     - Scene 4: {t3}s ({int(t3*1000)} ms)
+2. MANDATORY CONTINUOUS INFINITE MOTION (ZERO STATIC STOPS):
+   - THE UI MUST NEVER SIT STILL! Add continuous CSS `@keyframes` infinite animations to floating glass cards, background gradient mesh orbs, glowing border beams, SVG path strokes, and light arcs (e.g. `animation: floatCard 4s ease-in-out infinite, glowPulse 2.5s ease-in-out infinite`).
+   - Use `requestAnimationFrame` or `setInterval` to continuously animate live numbers, dynamic graph tickers, progress rings, and telemetry gauges at 60fps so the page is non-stop alive.
+3. NO LAPTOP CONTAINER LOCKS & NO LOADING SPINNERS:
+   - Render a bespoke form-factor for "{topic}" (Mobile Phone frame for mobile apps; Full-Bleed 3D Cockpit HUD canvas for aviation/space; 4K Cinema Hero view for media; Dark glass app window for software).
+   - Scene 1 MUST render INSTANTLY at 0 seconds with pre-populated UI metrics and active glowing visual elements. DO NOT show empty loading screens or spinners.
 4. VISUAL EXCELLENCE:
    - 1920x1080 resolution (16:9 widescreen 4K viewport).
    - Bespoke color palette matching "{topic}".
-   - Use smooth CSS keyframe animations, backdrop-filter blur, 3D glassmorphism, pop-out cards, and glowing light trails.
+   - Use smooth 3D glassmorphism, depth transforms, pop-out Z-space cards, and backdrop blur.
 
 Return ONLY the complete raw HTML code starting with <!DOCTYPE html>. Do NOT output markdown backticks or explanations."""
         
@@ -110,20 +117,22 @@ Return ONLY the complete raw HTML code starting with <!DOCTYPE html>. Do NOT out
         
         return self._extract_html(response)
     
-    def _retry_html(self, topic: str, research_brief: str = None) -> str:
+    def _retry_html(self, topic: str, research_brief: str = None, audio_duration: float = 30.0) -> str:
         """Retry with an explicit high-impact prompt."""
         
         brief_context = f"\nRESEARCH BRIEF & SPECIFICATION FOR '{topic}':\n{research_brief}\n" if research_brief else ""
+        step_interval = round(audio_duration / 4.0, 1)
+        t1, t2, t3 = round(step_interval, 1), round(step_interval * 2, 1), round(step_interval * 3, 1)
         
-        prompt = f"""Write a comprehensive 1000+ line single self-contained HTML file (with embedded CSS and JS) for a 45-second product launch video for "{topic}".
+        prompt = f"""Write a comprehensive 1000+ line single self-contained HTML file (with embedded CSS and JS) for a {audio_duration:.1f}-second product launch video for "{topic}".
 {brief_context}
 STRICT SPECIFICATIONS:
 - 1920x1080 resolution (16:9 widescreen)
+- Total duration: {audio_duration:.1f}s. Auto-advance 4 scenes using JavaScript `setTimeout()` at 0s, {t1}s, {t2}s, {t3}s.
+- MANDATORY INFINITE MOTION: Every element must use infinite `@keyframes` float/pulse animations and JS live counters so the screen NEVER sits static!
 - DO NOT wrap in a generic computer mockup or show any "Loading..." spinners!
-- Render a bespoke UI structure tailored specifically for {topic} (Mobile phone frame for mobile apps; Full-bleed 3D HUD canvas for aviation/space; Dark glass desktop window for software; Cinema hero view for streaming).
+- Render a bespoke UI structure tailored specifically for {topic}.
 - Scene 1 MUST load INSTANTLY at 0s with pre-filled UI metrics, glowing charts, SVG icons, and live animations.
-- Auto-play 4 scenes using JavaScript `setTimeout` (0s, 10s, 24s, 36s).
-- Deep dark backdrop with animated ambient particles and 3D glass cards.
 
 Return ONLY the HTML code starting with <!DOCTYPE html>."""
         

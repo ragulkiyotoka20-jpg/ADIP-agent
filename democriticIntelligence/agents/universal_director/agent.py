@@ -34,14 +34,30 @@ class UniversalDirectorAgent:
         self.composer = UniversalComposer()
         self.thumbnail_gen = ThumbnailGenerator()
 
+    def _get_audio_duration(self, audio_file: str) -> float:
+        """Get exact duration of MP3 audio file using ffprobe or fallback estimation."""
+        try:
+            cmd = [
+                "ffprobe", "-v", "error", "-show_entries",
+                "format=duration", "-of", "default=noprint_wrappers=1:nokey=1",
+                audio_file
+            ]
+            out = subprocess.check_output(cmd).decode('utf-8').strip()
+            return float(out)
+        except Exception:
+            if os.path.exists(audio_file):
+                size = os.path.getsize(audio_file)
+                return max(15.0, round(size / 16000.0, 1))
+            return 30.0
+
     def run(self, topic: str) -> str:
-        """Run the complete video pipeline for any topic."""
+        """Run the complete video pipeline for any topic with perfect audio-visual sync."""
         
         safe_topic = topic.lower().replace(" ", "-").replace("_", "-")
         
         print("=" * 60)
         print(f"  Universal Director: Creating Video for '{topic}'")
-        print(f"  Research & content driven by Web Gemini")
+        print(f"  Dynamic Audio-Visual Sync Pipeline")
         print("=" * 60)
         
         # -- Step 0: Research Real-World Product & UI Specs --
@@ -52,45 +68,25 @@ class UniversalDirectorAgent:
         research_res = self.researcher.research(topic)
         research_brief = research_res.get("brief", "")
         
-        # -- Step 1: Ask Gemini to generate the FULL animation code --
+        # -- Step 1: Generate Voiceover Narration & Audio FIRST --
         print(f"\n{'-'*50}")
-        print(f"[Step 1/5] GEMINI -> Generate bespoke animation for '{topic}'")
-        print(f"  Opening Chromium -> gemini.google.com...")
+        print(f"[Step 1/5] GEMINI -> Generate voiceover narration script")
         print(f"{'-'*50}")
         
-        result = self.animation_gen.generate(topic, research_brief=research_brief)
-        html_path = result["html_path"]
-        app_name = result["app_name"]
-        app_tagline = result["app_tagline"]
-        html_code = result.get("html_code", "")
-        
-        print(f"\n  [OK] App Name: {app_name}")
-        print(f"  [OK] Tagline: {app_tagline}")
-        print(f"  [OK] Animation: {html_path}")
-        
-        # -- Step 2: Ask Gemini for voiceover narration --
-        print(f"\n{'-'*50}")
-        print(f"[Step 2/5] GEMINI -> Generate voiceover narration")
-        print(f"  Opening Chromium -> gemini.google.com...")
-        print(f"{'-'*50}")
+        # Extract temporary app name candidate
+        app_name_match = topic.title()
         
         script_text = self.script_writer.write(
             topic=topic,
-            app_name=app_name,
-            html_code=html_code
+            app_name=app_name_match,
+            research_brief=research_brief
         )
         
-        word_count = len(script_text.split())
-        print(f"\n  [OK] Narration: {word_count} words")
-        print(f"  [OK] Preview: \"{script_text[:100]}...\"")
-        
-        # -- Step 3: Generate voiceover audio + subtitles via Edge-TTS --
         audio_file = f"{safe_topic}_voiceover.mp3"
         captions_file = f"{safe_topic}_captions.vtt"
         
-        print(f"\n{'-'*50}")
-        print(f"[Step 3/5] Edge-TTS -> Generate audio + subtitles")
-        print(f"{'-'*50}")
+        print(f"  [OK] Narration: {len(script_text.split())} words")
+        print(f"  [OK] Edge-TTS -> Generating audio track & subtitles...")
         
         try:
             subprocess.run([
@@ -104,21 +100,45 @@ class UniversalDirectorAgent:
         except Exception as e:
             print(f"  [FAIL] Edge-TTS error: {e}")
 
-        # -- Step 4: Record animation + compose final video --
+        # Compute exact audio duration
+        audio_duration = self._get_audio_duration(audio_file)
+        print(f"  [OK] Measured Narration Duration: {audio_duration:.1f} seconds")
+        
+        # -- Step 2: Generate Bespoke Animation Code Synced to Audio Duration --
         print(f"\n{'-'*50}")
-        print(f"[Step 4/5] Composer -> Record animation + merge audio")
+        print(f"[Step 2/5] GEMINI -> Generate animation code (Target: {audio_duration:.1f}s)")
+        print(f"  Opening Chromium -> gemini.google.com...")
+        print(f"{'-'*50}")
+        
+        result = self.animation_gen.generate(
+            topic=topic, 
+            research_brief=research_brief,
+            audio_duration=audio_duration
+        )
+        html_path = result["html_path"]
+        app_name = result["app_name"]
+        app_tagline = result["app_tagline"]
+        
+        print(f"\n  [OK] App Name: {app_name}")
+        print(f"  [OK] Tagline: {app_tagline}")
+        print(f"  [OK] Animation: {html_path}")
+
+        # -- Step 3: Record animation + compose final video matching exact audio duration --
+        print(f"\n{'-'*50}")
+        print(f"[Step 3/5] Composer -> Record animation + merge audio ({audio_duration:.1f}s)")
         print(f"{'-'*50}")
         
         video_output = self.composer.compose(
             html_path=html_path,
             topic=topic,
             audio_track=audio_file,
-            captions_file=captions_file
+            captions_file=captions_file,
+            duration_sec=audio_duration
         )
         
-        # -- Step 5: Generate thumbnail via Gemini image generation --
+        # -- Step 4: Generate thumbnail via Gemini image generation --
         print(f"\n{'-'*50}")
-        print(f"[Step 5/5] GEMINI -> Generate thumbnail image")
+        print(f"[Step 4/5] GEMINI -> Generate thumbnail image")
         print(f"  Opening Chromium -> gemini.google.com...")
         print(f"{'-'*50}")
         
@@ -135,11 +155,12 @@ class UniversalDirectorAgent:
         print(f"\n{'='*60}")
         print(f"  VIDEO CREATED SUCCESSFULLY!")
         print(f"  ")
-        print(f"  Topic:      {topic}")
-        print(f"  App:        {app_name}")
-        print(f"  Tagline:    {app_tagline}")
-        print(f"  Video:      {video_output}")
-        print(f"  Thumbnail:  {thumbnail_path or 'N/A'}")
+        print(f"  Topic:            {topic}")
+        print(f"  App:              {app_name}")
+        print(f"  Tagline:          {app_tagline}")
+        print(f"  Audio Duration:   {audio_duration:.1f}s")
+        print(f"  Video:            {video_output}")
+        print(f"  Thumbnail:        {thumbnail_path or 'N/A'}")
         print(f"{'='*60}")
         
         return video_output

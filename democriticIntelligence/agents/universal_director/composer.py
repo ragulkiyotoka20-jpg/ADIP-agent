@@ -16,6 +16,7 @@ class UniversalComposer:
         topic: str,
         audio_track: str,
         captions_file: str,
+        duration_sec: float = 30.0,
         headless: bool = False
     ) -> str:
         """Record the dynamic animation and merge with audio + subtitles."""
@@ -24,7 +25,8 @@ class UniversalComposer:
         raw_output = f"{safe_topic}_raw.webm"
         final_output = f"{safe_topic}_demo_final.mp4"
         
-        print(f"[UniversalComposer] Opening Chromium to record {safe_topic} UI animation...")
+        recording_ms = int((duration_sec + 1.5) * 1000)
+        print(f"[UniversalComposer] Opening Chromium to record {safe_topic} UI animation ({duration_sec:.1f}s audio)...")
         
         file_url = f"file:///{os.path.abspath(html_path).replace(chr(92), '/')}"
         
@@ -45,8 +47,8 @@ class UniversalComposer:
             print(f"[UniversalComposer] Opening {file_url}")
             page.goto(file_url)
             
-            print(f"[UniversalComposer] Recording 45-second {safe_topic} animation... Please wait.")
-            page.wait_for_timeout(46000)
+            print(f"[UniversalComposer] Recording {duration_sec:.1f}s {safe_topic} animation... Please wait.")
+            page.wait_for_timeout(recording_ms)
             
             # Obtain exact video path before context close
             try:
