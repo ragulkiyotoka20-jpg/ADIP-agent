@@ -149,14 +149,20 @@ class DemoAgentAdapter(BaseAgent):
         kg_data = context.get("knowledge_graph") or {}
         
         try:
+            import asyncio
             from agents.demo.agent import DemoAgent
             demo_agent = DemoAgent()
+            
+            # Execute heavy video synthesis in thread pool
+            loop = asyncio.get_running_loop()
+            success = await loop.run_in_executor(None, demo_agent.run_pipeline)
+            
             demo_output = {
                 "demo_id": "demo_v1",
                 "title": f"Product Walkthrough - {kg_data.get('product_name', 'Application')}",
                 "workflows_covered": kg_data.get("workflows_count", 1),
-                "status": "COMPILED",
-                "video_path": "exploration_output/videos/demo_walkthrough.mp4"
+                "status": "COMPILED" if success else "FAILED",
+                "video_path": "demo_final.mp4"
             }
             return demo_output
         except Exception as e:
