@@ -1,2 +1,0 @@
-{"issue_id":"SENTRY-52","service":"checkout-api","first_seen":"2026-05-31T02:10:14Z","last_seen":"2026-05-31T02:27:45Z","level":"fatal","error_message":"payment-service replica unavailable","event_count":1842,"issue_url":"https://sentry.example/issues/SENTRY-52"}
-

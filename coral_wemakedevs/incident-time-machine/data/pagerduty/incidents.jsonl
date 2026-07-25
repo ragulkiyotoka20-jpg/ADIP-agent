@@ -1,2 +1,0 @@
-{"incident_id":"INC-1842","title":"Checkout payments failing after deploy","created_at":"2026-05-31T02:10:00Z","resolved_at":"2026-05-31T02:28:00Z","severity":"SEV-1","service":"checkout-api","alert_url":"https://pagerduty.example/incidents/INC-1842"}
-

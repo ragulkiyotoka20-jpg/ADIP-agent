@@ -1,2 +1,0 @@
-{"message_id":"SL-01","channel":"incidents","timestamp":"2026-05-31T02:13:00Z","author":"oncall-mina","text":"Checkout failure started immediately after deploy 7f3c1a. Rolling back the replica-pool route now.","permalink":"https://slack.example/archives/incidents/p021300"}
-

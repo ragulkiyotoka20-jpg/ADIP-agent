@@ -1,3 +1,0 @@
-{"capture_id":"UI-T-1","service":"checkout-api","captured_at":"2026-05-31T02:09:00Z","phase":"before","route":"/checkout","status":"healthy","screenshot_url":"evidence://checkout-before.png","diff_score":0.0}
-{"capture_id":"UI-T+1","service":"checkout-api","captured_at":"2026-05-31T02:11:00Z","phase":"after","route":"/checkout","status":"payment_failed","screenshot_url":"evidence://checkout-after.png","diff_score":0.38}
-

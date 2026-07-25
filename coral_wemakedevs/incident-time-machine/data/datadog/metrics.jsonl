@@ -1,2 +1,0 @@
-{"metric_id":"METRIC-331","service":"checkout-api","window_start":"2026-05-31T02:10:00Z","window_end":"2026-05-31T02:28:00Z","p95_latency_ms":4830.0,"error_rate":0.37,"baseline_p95_ms":212.0,"dashboard_url":"https://datadog.example/dashboard/checkout-api"}
-
