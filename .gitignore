@@ -1,17 +1,11 @@
-# Agent Build Artifacts
-__pycache__/
-*.py[cod]
-*$py.class
-.pytest_cache/
-*.log
-*.db
-*.sqlite3
+Agent/
+applications/
 *.mp4
 *.webm
 *.mp3
-*.wav
-*_frames/
-temp_rec_*/
-.env
-.vscode/
-.idea/
+*.db
+*.zip
+temp*
+wt_*
+motion_frames/
+*.png
