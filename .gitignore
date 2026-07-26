@@ -1,0 +1,9 @@
+Agent/
+applications/
+*.mp4
+*.webm
+*.mp3
+*.db
+*.zip
+temp*
+wt_*

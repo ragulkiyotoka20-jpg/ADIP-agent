@@ -1,15 +1,20 @@
 class WorkflowPlanner:
     def create_plan(self, request_type: str) -> list:
         """
-        Creates the execution plan based on the routed request type.
+        Creates execution plan based on request type.
+        Available agents: explorer, knowledge_graph, documentation, qa, demo, release.
         """
         base_plan = ["explorer", "knowledge_graph"]
-        if request_type == "qa":
-            return base_plan + ["qa"]
-        elif request_type == "documentation":
-            return base_plan + ["documentation"]
-        elif request_type == "demo":
-            return base_plan + ["demo"]
+        req = request_type.lower()
         
+        if req == "qa":
+            return base_plan + ["qa"]
+        elif req == "documentation":
+            return base_plan + ["documentation"]
+        elif req == "demo":
+            return base_plan + ["demo"]
+        elif req == "release":
+            return base_plan + ["release"]
+            
         # Default full suite
-        return base_plan + ["documentation", "qa", "demo"]
+        return base_plan + ["documentation", "qa", "demo", "release"]
