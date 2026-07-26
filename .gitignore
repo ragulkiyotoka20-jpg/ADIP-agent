@@ -1,31 +1,11 @@
-# ====================================
-# Documentation Agent: local-only files
-# ====================================
-
-# Secrets and local environment configuration
-documentation_agent/.env
-documentation_agent/.env.*
-
-# Local orchestration helper
-documentation_agent/orchestrator.py
-
-# Product Knowledge Graph test inputs
-documentation_agent/*.json
-
-# Generated documentation
-documentation_agent/outputs/
-
-# Python virtual environments
-documentation_agent/.venv/
-documentation_agent/venv/
-documentation_agent/env/
-
-# Python cache and compiled files
-documentation_agent/__pycache__/
-documentation_agent/**/*.py[cod]
-
-# Editor and operating-system files
-.vscode/
-.idea/
-.DS_Store
-Thumbs.db
+Agent/
+applications/
+*.mp4
+*.webm
+*.mp3
+*.db
+*.zip
+temp*
+wt_*
+motion_frames/
+*.png
