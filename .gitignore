@@ -7,3 +7,5 @@ applications/
 *.zip
 temp*
 wt_*
+motion_frames/
+*.png
